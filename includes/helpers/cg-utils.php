@@ -61,6 +61,9 @@ function cg_fetch_openrouter_models($force_refresh = false) {
         $provider = isset($model['provider']) ? $model['provider'] : 'Sconosciuto';
         $name = isset($model['name']) ? $model['name'] : $model['id'];
         
+        // Verifica se il modello supporta la generazione di immagini
+        $supports_images = cg_model_can_generate_images($model['id']);
+        
         // Aggiungi informazioni di contesto se disponibili (qualità, token al minuto, ecc.)
         $context_info = '';
         if (isset($model['context_length'])) {
@@ -70,7 +73,7 @@ function cg_fetch_openrouter_models($force_refresh = false) {
             $context_info .= ' - $' . number_format($model['pricing']['prompt'], 4) . '/1M token';
         }
         
-        $models[$model['id']] = $name . ' (' . $provider . $context_info . ')';
+        $models[$model['id']] = $name . ' (' . $provider . $context_info . ')' . ($supports_images ? ' (Supporta immagini)' : '');
     }
     
     // Se non sono stati trovati modelli, ritorna i predefiniti
@@ -107,30 +110,30 @@ function cg_get_default_models() {
         'openai/gpt-4' => 'GPT-4 (alta qualità)',
         'openai/gpt-3.5-turbo' => 'GPT-3.5 Turbo (più veloce)',
         'google/gemini-pro' => 'Gemini Pro',
-        'meta-llama/llama-3-70b-instruct' => 'Llama 3 70B'
+        'meta-llama/llama-3-70b-instruct' => 'Llama 3 70B',
+        'openai/dall-e-3' => 'DALL·E 3 (Supporta immagini)',
+        'stability/stable-diffusion-xl-1024-v1-0' => 'Stable Diffusion XL 1.0 (Supporta immagini)',
+        'stability/stable-diffusion-3-large' => 'Stable Diffusion 3 Large (Supporta immagini)',
+        'midjourney/mj' => 'Midjourney (Supporta immagini)',
+        'google/imagen-2' => 'Google Imagen 2 (Supporta immagini)'
     );
 }
 
 /**
- * Ottieni i modelli di generazione immagini predefiniti per OpenRouter.
+ * Verifica se un modello specifico può generare immagini.
+ * @param string $model_id ID del modello da verificare
+ * @return bool True se il modello supporta la generazione di immagini, false altrimenti
  */
-function cg_get_default_image_models() {
-    return array(
-        'stability/stable-diffusion-xl-1024-v1-0' => 'Stable Diffusion XL 1.0',
-        'openai/dall-e-3' => 'DALL·E 3',
-        'anthropic/claude-3-haiku' => 'Claude 3 Haiku (Vision)',
-        'midjourney/mj' => 'Midjourney',
-        'stability/stable-diffusion-3-large' => 'Stable Diffusion 3 Large',
-        'google/imagen-2' => 'Google Imagen 2'
+function cg_model_can_generate_images($model_id) {
+    $image_capable_models = array(
+        'openai/dall-e-3',
+        'stability/stable-diffusion-xl-1024-v1-0',
+        'stability/stable-diffusion-3-large',
+        'midjourney/mj',
+        'google/imagen-2'
     );
-}
-
-/**
- * Ottieni i modelli di generazione immagini disponibili per OpenRouter.
- */
-function cg_get_available_image_models() {
-    // In una versione più avanzata, si potrebbe implementare il recupero dei modelli disponibili da OpenRouter
-    return cg_get_default_image_models();
+    
+    return in_array($model_id, $image_capable_models);
 }
 
 /**

@@ -12,7 +12,6 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 $options = array(
     'cg_openrouter_api_key',
     'cg_llm_model',
-    'cg_image_llm_model',
     'cg_adsense_inline_code',
     'cg_adsense_fullscreen_code',
     'cg_adsense_header_code',

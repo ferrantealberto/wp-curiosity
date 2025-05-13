@@ -167,21 +167,27 @@ class CG_OpenRouter {
     }
 
     /**
-     * Genera un'immagine utilizzando OpenRouter API.
+     * Genera un'immagine utilizzando il modello LLM selezionato.
      */
     public function generate_image($prompt, $post_id) {
         $api_key = $this->get_api_key();
-        $model = get_option('cg_image_llm_model', 'stability/stable-diffusion-xl-1024-v1-0');
+        $model = $this->get_model();
 
         if (empty($api_key)) {
             return new WP_Error('missing_api_key', 'OpenRouter API key is missing');
         }
 
-        // Prepara la richiesta API in base al modello
+        // Verifica se il modello selezionato può generare immagini
+        $can_generate_images = cg_model_can_generate_images($model);
+        if (!$can_generate_images) {
+            return new WP_Error('model_not_supported', 'Il modello selezionato non supporta la generazione di immagini');
+        }
+
+        // Prepara la richiesta API
         $endpoint = 'https://openrouter.ai/api/v1/images/generations';
         
         $request_body = array(
-            'model' => $model,
+            'model' => $model, // Usa direttamente il modello LLM selezionato
             'prompt' => $prompt,
             'n' => 1,
             'size' => '1024x1024',
@@ -206,7 +212,7 @@ class CG_OpenRouter {
         $data = json_decode($body, true);
 
         if (empty($data) || !isset($data['data'][0]['url'])) {
-            return new WP_Error('api_error', 'Invalid response from OpenRouter API');
+            return new WP_Error('api_error', 'Invalid response from OpenRouter API. Il modello selezionato potrebbe non supportare la generazione di immagini.');
         }
 
         // Ottieni l'URL dell'immagine generata

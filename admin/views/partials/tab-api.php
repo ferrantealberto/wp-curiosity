@@ -23,7 +23,9 @@
                     $models = cg_get_available_models();
                     
                     foreach ($models as $model_id => $model_name) {
-                        echo '<option value="' . esc_attr($model_id) . '" ' . selected($current_model, $model_id, false) . '>' . esc_html($model_name) . '</option>';
+                        $can_generate_images = cg_model_can_generate_images($model_id);
+                        $class = $can_generate_images ? 'class="cg-model-supports-images"' : '';
+                        echo '<option value="' . esc_attr($model_id) . '" ' . selected($current_model, $model_id, false) . ' ' . $class . '>' . esc_html($model_name) . ($can_generate_images ? ' (Supporta immagini)' : '') . '</option>';
                     }
                     ?>
                 </select>
@@ -31,30 +33,10 @@
                     <span class="dashicons dashicons-update"></span> <?php _e('Aggiorna Modelli', 'curiosity-generator'); ?>
                 </button>
             </div>
-            <p class="description"><?php _e('Seleziona il modello LLM da utilizzare per generare curiosità. I modelli di qualità superiore potrebbero costare più crediti su OpenRouter.', 'curiosity-generator'); ?></p>
+            <p class="description"><?php _e('Seleziona il modello LLM da utilizzare per generare curiosità. I modelli evidenziati supportano anche la generazione di immagini.', 'curiosity-generator'); ?></p>
             <div id="cg-model-loading" style="display:none;">
                 <span class="spinner is-active"></span> <?php _e('Caricamento modelli...', 'curiosity-generator'); ?>
             </div>
-        </td>
-    </tr>
-    <tr>
-        <th scope="row">
-            <label for="cg_image_llm_model"><?php _e('Modello per Immagini', 'curiosity-generator'); ?></label>
-        </th>
-        <td>
-            <div class="cg-model-selector-wrapper">
-                <select name="cg_image_llm_model" id="cg_image_llm_model" class="cg-select2-models">
-                    <?php
-                    $current_image_model = get_option('cg_image_llm_model', 'stability/stable-diffusion-xl-1024-v1-0');
-                    $image_models = cg_get_available_image_models();
-                    
-                    foreach ($image_models as $model_id => $model_name) {
-                        echo '<option value="' . esc_attr($model_id) . '" ' . selected($current_image_model, $model_id, false) . '>' . esc_html($model_name) . '</option>';
-                    }
-                    ?>
-                </select>
-            </div>
-            <p class="description"><?php _e('Seleziona il modello LLM da utilizzare per generare immagini in evidenza per le curiosità.', 'curiosity-generator'); ?></p>
         </td>
     </tr>
 </table>

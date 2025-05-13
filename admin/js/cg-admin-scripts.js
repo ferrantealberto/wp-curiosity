@@ -27,11 +27,21 @@
             templateResult: formatModelOption
         });
         
-        // Formatta le opzioni del modello con evidenziazione della ricerca
+        // Formatta le opzioni del modello con evidenziazione della ricerca e supporto immagini
         function formatModelOption(option) {
             if (!option.id) {
                 return option.text;
             }
+            
+            var $option = $(option.element);
+            
+            // Verifica se il modello supporta la generazione di immagini
+            if ($option.hasClass('cg-model-supports-images')) {
+                var $container = $('<div class="cg-model-supports-images"></div>');
+                $container.text(option.text);
+                return $container;
+            }
+            
             return $('<span>' + option.text + '</span>');
         }
         
@@ -67,9 +77,16 @@
                         $select.empty();
                         
                         $.each(response.data.models, function(id, name) {
+                            // Verifica se il nome del modello contiene l'indicazione di supporto immagini
+                            var supportsImages = name.includes('(Supporta immagini)');
+                            
                             var $option = $('<option></option>')
                                 .val(id)
                                 .text(name);
+                                
+                            if (supportsImages) {
+                                $option.addClass('cg-model-supports-images');
+                            }
                                 
                             if (id === currentModel) {
                                 $option.prop('selected', true);

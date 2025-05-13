@@ -85,6 +85,35 @@
             });
         });
         
+        // Gestione click sul pulsante "Copia Link"
+        $(document).on('click', '.cg-copy-link-btn', function() {
+            var link = $(this).data('link');
+            
+            // Creazione di un elemento temporaneo per copiare il link
+            var tempInput = $('<input>');
+            $('body').append(tempInput);
+            tempInput.val(link).select();
+            document.execCommand('copy');
+            tempInput.remove();
+            
+            // Mostra messaggio di conferma
+            var $successMessage = $('<div class="cg-copy-success">Link copiato negli appunti!</div>');
+            $('body').append($successMessage);
+            
+            // Mostra il messaggio
+            setTimeout(function() {
+                $successMessage.addClass('show');
+            }, 10);
+            
+            // Rimuovi il messaggio dopo 2 secondi
+            setTimeout(function() {
+                $successMessage.removeClass('show');
+                setTimeout(function() {
+                    $successMessage.remove();
+                }, 300);
+            }, 2000);
+        });
+        
         // Function to start the generation process
         function startGeneration() {
             // Show loading
@@ -157,13 +186,25 @@
                 var $item = $('<div class="cg-curiosity-item"></div>');
                 var $title = $('<h4 class="cg-curiosity-title"></h4>').text(data.post_titles[i]);
                 var $content = $('<div class="cg-curiosity-content"></div>').html(data.post_contents[i]);
+                
+                // Container per i pulsanti di azione
+                var $postActions = $('<div class="cg-post-actions"></div>');
+                
+                // Link al post completo
                 var $link = $('<a class="cg-curiosity-link" target="_blank"></a>')
                     .attr('href', data.post_urls[i])
                     .text('Visualizza Post Completo');
                 
+                // Pulsante Copia Link
+                var $copyLinkBtn = $('<button class="cg-copy-link-btn" data-link="' + data.post_urls[i] + '"></button>')
+                    .html('<i class="dashicons dashicons-admin-links"></i> Copia Link');
+                
                 // Pulsante per generare l'immagine in evidenza
                 var $generateImageBtn = $('<button class="cg-generate-image-btn" data-post-id="' + data.post_ids[i] + '"></button>')
                     .text('Genera Immagine in Evidenza');
+                
+                // Aggiungi i pulsanti al container di azioni
+                $postActions.append($link, $copyLinkBtn, $generateImageBtn);
                 
                 // Create social sharing buttons
                 var $socialShare = $('<div class="cg-social-share"></div>');
@@ -203,8 +244,8 @@
                 // Add all buttons to social share container
                 $socialShare.append($facebookBtn, $twitterBtn, $linkedinBtn, $pinterestBtn, $whatsappBtn);
                 
-                // Aggiunge il pulsante di generazione immagine dopo il link al post
-                $item.append($title, $content, $link, $generateImageBtn, $socialShare);
+                // Aggiungi tutto all'item della curiosità
+                $item.append($title, $content, $postActions, $socialShare);
                 $list.append($item);
             }
             

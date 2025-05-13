@@ -80,6 +80,13 @@
     background-color: #f0f0f0;
 }
 
+/* Evidenzia modelli che supportano immagini */
+.select2-results__option.cg-model-supports-images,
+option.cg-model-supports-images {
+    color: #0073aa;
+    font-weight: bold;
+}
+
 /* Stili per il contenitore di ricerca */
 .select2-search--dropdown {
     padding: 8px;
