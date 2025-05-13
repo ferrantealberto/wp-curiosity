@@ -22,13 +22,25 @@ class CG_Post_Manager {
             $title .= '…'; // Usa il carattere Unicode per l'ellipsis
         }
         
+        // Get the default "Curiosità" category ID
+        $curiosity_category_id = $this->get_curiosity_category_id();
+        
+        // Get or create the category for the selected curiosity type
+        $type_category_id = $this->get_or_create_type_category($params['type']);
+        
+        // Create array of category IDs to assign
+        $category_ids = array($curiosity_category_id);
+        if ($type_category_id && $type_category_id != $curiosity_category_id) {
+            $category_ids[] = $type_category_id;
+        }
+        
         // Prepare post data
         $post_data = array(
             'post_title'    => $title,
             'post_content'  => $curiosity['text'],
             'post_status'   => 'publish',
             'post_author'   => $user_id,
-            'post_category' => array($this->get_curiosity_category_id()),
+            'post_category' => $category_ids,
             'post_type'     => 'post'
         );
         
@@ -71,6 +83,45 @@ class CG_Post_Manager {
         }
         
         return $category->term_id;
+    }
+    
+    /**
+     * Get or create a category for the selected curiosity type.
+     * 
+     * @param string $type_id The type ID (e.g., 'historical-facts', 'science-nature')
+     * @return int The category ID
+     */
+    private function get_or_create_type_category($type_id) {
+        if (empty($type_id)) {
+            return 0;
+        }
+        
+        // Get the human-readable name for this type
+        $types = cg_get_default_types();
+        if (!isset($types[$type_id])) {
+            return 0;
+        }
+        
+        $type_name = $types[$type_id];
+        
+        // Check if this category already exists
+        $category = get_term_by('name', $type_name, 'category');
+        if ($category) {
+            return $category->term_id;
+        }
+        
+        // Create the category if it doesn't exist
+        $slug = sanitize_title($type_name);
+        $result = wp_insert_term($type_name, 'category', array(
+            'description' => sprintf('Curiosità nella categoria "%s"', $type_name),
+            'slug' => $slug
+        ));
+        
+        if (is_wp_error($result)) {
+            return 0;
+        }
+        
+        return $result['term_id'];
     }
     
     /**
