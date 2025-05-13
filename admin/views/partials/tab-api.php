@@ -16,16 +16,38 @@
             <label for="cg_llm_model"><?php _e('Modello LLM', 'curiosity-generator'); ?></label>
         </th>
         <td>
+            <div class="cg-model-filters">
+                <label class="cg-filter-label"><?php _e('Filtri:', 'curiosity-generator'); ?></label>
+                <button type="button" class="button cg-filter-button" data-filter="all"><?php _e('Tutti', 'curiosity-generator'); ?></button>
+                <button type="button" class="button cg-filter-button" data-filter="free"><?php _e('Gratuiti', 'curiosity-generator'); ?></button>
+                <button type="button" class="button cg-filter-button" data-filter="images"><?php _e('Supportano Immagini', 'curiosity-generator'); ?></button>
+                <button type="button" class="button cg-filter-button" data-filter="best"><?php _e('Migliore Qualità', 'curiosity-generator'); ?></button>
+            </div>
+            
             <div class="cg-model-selector-wrapper">
                 <select name="cg_llm_model" id="cg_llm_model" class="cg-select2-models">
                     <?php
                     $current_model = get_option('cg_llm_model', 'anthropic/claude-3-opus');
                     $models = cg_get_available_models();
                     
-                    foreach ($models as $model_id => $model_name) {
-                        $can_generate_images = cg_model_can_generate_images($model_id);
-                        $class = $can_generate_images ? 'class="cg-model-supports-images"' : '';
-                        echo '<option value="' . esc_attr($model_id) . '" ' . selected($current_model, $model_id, false) . ' ' . $class . '>' . esc_html($model_name) . ($can_generate_images ? ' (Supporta immagini)' : '') . '</option>';
+                    foreach ($models as $model_id => $model_data) {
+                        $class_attributes = array();
+                        
+                        if ($model_data['supports_images']) {
+                            $class_attributes[] = 'cg-model-supports-images';
+                        }
+                        
+                        if ($model_data['is_free']) {
+                            $class_attributes[] = 'cg-model-free';
+                        }
+                        
+                        if ($model_data['quality_rating'] >= 4) {
+                            $class_attributes[] = 'cg-model-high-quality';
+                        }
+                        
+                        $class_attr = !empty($class_attributes) ? 'class="' . implode(' ', $class_attributes) . '"' : '';
+                        
+                        echo '<option value="' . esc_attr($model_id) . '" ' . selected($current_model, $model_id, false) . ' ' . $class_attr . ' data-quality="' . esc_attr($model_data['quality_rating']) . '" data-free="' . ($model_data['is_free'] ? '1' : '0') . '" data-images="' . ($model_data['supports_images'] ? '1' : '0') . '">' . esc_html($model_data['name']) . '</option>';
                     }
                     ?>
                 </select>
@@ -33,7 +55,7 @@
                     <span class="dashicons dashicons-update"></span> <?php _e('Aggiorna Modelli', 'curiosity-generator'); ?>
                 </button>
             </div>
-            <p class="description"><?php _e('Seleziona il modello LLM da utilizzare per generare curiosità. I modelli evidenziati supportano anche la generazione di immagini.', 'curiosity-generator'); ?></p>
+            <p class="description"><?php _e('Seleziona il modello LLM da utilizzare per generare curiosità. I modelli evidenziati in diverse categorie: blu per quelli che supportano le immagini, verde per i gratuiti, arancione per quelli di alta qualità.', 'curiosity-generator'); ?></p>
             <div id="cg-model-loading" style="display:none;">
                 <span class="spinner is-active"></span> <?php _e('Caricamento modelli...', 'curiosity-generator'); ?>
             </div>

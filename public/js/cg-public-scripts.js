@@ -199,12 +199,15 @@
                 var $copyLinkBtn = $('<button class="cg-copy-link-btn" data-link="' + data.post_urls[i] + '"></button>')
                     .html('<i class="dashicons dashicons-admin-links"></i> Copia Link');
                 
-                // Pulsante per generare l'immagine in evidenza
-                var $generateImageBtn = $('<button class="cg-generate-image-btn" data-post-id="' + data.post_ids[i] + '"></button>')
-                    .text('Genera Immagine in Evidenza');
+                // Aggiungi sempre link e copia link
+                $postActions.append($link, $copyLinkBtn);
                 
-                // Aggiungi i pulsanti al container di azioni
-                $postActions.append($link, $copyLinkBtn, $generateImageBtn);
+                // Mostra il pulsante "Genera Immagine in Evidenza" solo se il modello supporta immagini
+                if (data.can_generate_images && data.can_generate_images[i]) {
+                    var $generateImageBtn = $('<button class="cg-generate-image-btn" data-post-id="' + data.post_ids[i] + '"></button>')
+                        .text('Genera Immagine in Evidenza');
+                    $postActions.append($generateImageBtn);
+                }
                 
                 // Create social sharing buttons
                 var $socialShare = $('<div class="cg-social-share"></div>');

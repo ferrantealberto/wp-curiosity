@@ -136,6 +136,7 @@ class CG_Frontend {
         $post_urls = array();
         $post_titles = array();
         $post_contents = array();
+        $can_generate_images = array();
         
         foreach ($result as $curiosity) {
             $post_id = $post_manager->create_curiosity_post($curiosity, $params, $user_id);
@@ -146,6 +147,7 @@ class CG_Frontend {
             $post_urls[] = get_permalink($post_id);
             $post_titles[] = get_the_title($post_id);
             $post_contents[] = $curiosity['text'];
+            $can_generate_images[] = (bool) get_post_meta($post_id, 'cg_can_generate_images', true);
         }
         
         // Add credits to the user
@@ -165,6 +167,7 @@ class CG_Frontend {
             'post_urls' => $post_urls,
             'post_titles' => $post_titles,
             'post_contents' => $post_contents,
+            'can_generate_images' => $can_generate_images,
             'message' => __('Curiosità generate con successo!', 'curiosity-generator'),
             'generation_credits' => $user_id ? $credits->get_user_generation_credits($user_id) : 0,
             'view_credits' => $user_id ? $credits->get_user_view_credits($user_id) : 0,
@@ -195,6 +198,17 @@ class CG_Frontend {
             wp_send_json_error(__('Post non valido o non è una curiosità generata.', 'curiosity-generator'));
         }
         
+        // Verifica se il modello utilizzato per generare questa curiosità supporta le immagini
+        $model = get_post_meta($post_id, 'cg_generated_model', true);
+        if (empty($model)) {
+            // Se il modello non è salvato nei metadati (post generati prima dell'aggiornamento), utilizza quello corrente
+            $model = get_option('cg_llm_model', 'anthropic/claude-3-opus');
+        }
+        
+        if (!cg_model_can_generate_images($model)) {
+            wp_send_json_error(__('Il modello selezionato non supporta la generazione di immagini.', 'curiosity-generator'));
+        }
+        
         // Ottieni il titolo e il contenuto per la generazione del prompt
         $title = get_the_title($post_id);
         $content = wp_strip_all_tags($post->post_content);
@@ -210,8 +224,8 @@ class CG_Frontend {
         // Limita la lunghezza del prompt
         $prompt = substr($prompt, 0, 1000);
         
-        // Inizializza OpenRouter
-        $openrouter = new CG_OpenRouter();
+        // Inizializza OpenRouter con il modello specifico che ha generato la curiosità
+        $openrouter = new CG_OpenRouter($model);
         
         // Genera l'immagine
         $result = $openrouter->generate_image($prompt, $post_id);
