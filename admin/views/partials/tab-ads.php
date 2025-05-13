@@ -4,6 +4,15 @@
 <table class="form-table">
     <tr>
         <th scope="row">
+            <label for="cg_adsense_header_code">Header Ad Code</label>
+        </th>
+        <td>
+            <textarea name="cg_adsense_header_code" id="cg_adsense_header_code" rows="5" class="large-text code"><?php echo esc_textarea(get_option('cg_adsense_header_code', '')); ?></textarea>
+            <p class="description">Enter your AdSense code for header ads. These will appear at the top of the curiosity generator box.</p>
+        </td>
+    </tr>
+    <tr>
+        <th scope="row">
             <label for="cg_adsense_inline_code">Inline Ad Code</label>
         </th>
         <td>
@@ -13,11 +22,20 @@
     </tr>
     <tr>
         <th scope="row">
+            <label for="cg_adsense_footer_code">Footer Ad Code</label>
+        </th>
+        <td>
+            <textarea name="cg_adsense_footer_code" id="cg_adsense_footer_code" rows="5" class="large-text code"><?php echo esc_textarea(get_option('cg_adsense_footer_code', '')); ?></textarea>
+            <p class="description">Enter your AdSense code for footer ads. These will appear at the bottom of the curiosity generator box.</p>
+        </td>
+    </tr>
+    <tr>
+        <th scope="row">
             <label for="cg_adsense_fullscreen_code">Fullscreen Ad Code</label>
         </th>
         <td>
             <textarea name="cg_adsense_fullscreen_code" id="cg_adsense_fullscreen_code" rows="5" class="large-text code"><?php echo esc_textarea(get_option('cg_adsense_fullscreen_code', '')); ?></textarea>
-            <p class="description">Enter your AdSense code for fullscreen ads. These will appear after the first generation, after the last curiosity in a batch, and at the frequency set below.</p>
+            <p class="description">Enter your AdSense code for fullscreen ads. These will appear before starting generation, and after generation is completed.</p>
         </td>
     </tr>
     <tr>

@@ -1,9 +1,11 @@
 <div id="curiosity-generator-form" class="cg-container">
-    <?php if (get_option('cg_adsense_header_code', '')): ?>
+    <!-- Header Ad - sempre visibile -->
     <div class="cg-adsense-header">
-        <?php echo get_option('cg_adsense_header_code', ''); ?>
+        <?php
+        $header_ad = get_option('cg_adsense_header_code', '');
+        echo !empty($header_ad) ? $header_ad : '<div class="cg-demo-ad">ANNUNCIO DEMO<br>Questo è un annuncio demo per test</div>';
+        ?>
     </div>
-    <?php endif; ?>
     
     <h2><?php echo esc_html($atts['title']); ?></h2>
     <p class="cg-description"><?php echo esc_html($atts['description']); ?></p>
@@ -13,6 +15,14 @@
         <?php echo sprintf(__('I tuoi Crediti: %s', 'curiosity-generator'), '<span class="cg-credit-count">' . cg_format_credits($credits) . '</span>'); ?>
     </div>
     <?php endif; ?>
+    
+    <!-- Inline Ad Top - sempre visibile -->
+    <div id="cg-inline-ad-top" class="cg-inline-ad">
+        <?php
+        $inline_ad = get_option('cg_adsense_inline_code', '');
+        echo !empty($inline_ad) ? $inline_ad : '<div class="cg-demo-ad">ANNUNCIO DEMO<br>Questo è un annuncio demo per test</div>';
+        ?>
+    </div>
     
     <form id="cg-form">
         <div class="cg-form-group">
@@ -120,9 +130,7 @@
     
     <div id="cg-results" class="cg-results" style="display:none">
         <h3><?php _e('Curiosità Generate', 'curiosity-generator'); ?></h3>
-        <div id="cg-inline-ad-top" class="cg-inline-ad"></div>
         <div id="cg-curiosities-list"></div>
-        <div id="cg-inline-ad-bottom" class="cg-inline-ad"></div>
         <button id="cg-generate-more" class="cg-button-secondary"><?php _e('Genera Altre', 'curiosity-generator'); ?></button>
     </div>
     
@@ -135,9 +143,18 @@
     
     <div id="cg-error" class="cg-error" style="display:none"></div>
     
-    <?php if (get_option('cg_adsense_footer_code', '')): ?>
-    <div class="cg-adsense-footer">
-        <?php echo get_option('cg_adsense_footer_code', ''); ?>
+    <!-- Inline Ad Bottom - sempre visibile -->
+    <div id="cg-inline-ad-bottom" class="cg-inline-ad">
+        <?php
+        echo !empty($inline_ad) ? $inline_ad : '<div class="cg-demo-ad">ANNUNCIO DEMO<br>Questo è un annuncio demo per test</div>';
+        ?>
     </div>
-    <?php endif; ?>
+    
+    <!-- Footer Ad - sempre visibile -->
+    <div class="cg-adsense-footer">
+        <?php
+        $footer_ad = get_option('cg_adsense_footer_code', '');
+        echo !empty($footer_ad) ? $footer_ad : '<div class="cg-demo-ad">ANNUNCIO DEMO<br>Questo è un annuncio demo per test</div>';
+        ?>
+    </div>
 </div>

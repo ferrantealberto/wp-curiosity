@@ -11,8 +11,11 @@ class CG_Frontend {
         wp_enqueue_style('cg-public-styles', CG_PLUGIN_URL . 'public/css/cg-public-styles.css', array(), CG_VERSION);
         wp_enqueue_script('cg-public-scripts', CG_PLUGIN_URL . 'public/js/cg-public-scripts.js', array('jquery'), CG_VERSION, true);
         
-        // Demo AdSense code for testing
-        $demo_ad_code = $this->get_demo_adsense_code();
+        // Get demo codes for different ad types
+        $demo_inline_code = $this->get_demo_adsense_code('inline');
+        $demo_fullscreen_code = $this->get_demo_adsense_code('fullscreen');
+        $demo_header_code = $this->get_demo_adsense_code('header');
+        $demo_footer_code = $this->get_demo_adsense_code('footer');
         
         wp_localize_script('cg-public-scripts', 'cg_ajax_object', array(
             'ajax_url' => admin_url('admin-ajax.php'),
@@ -22,7 +25,10 @@ class CG_Frontend {
             'adsense_inline_code' => get_option('cg_adsense_inline_code', ''),
             'adsense_header_code' => get_option('cg_adsense_header_code', ''),
             'adsense_footer_code' => get_option('cg_adsense_footer_code', ''),
-            'adsense_demo_code' => $demo_ad_code,
+            'adsense_demo_inline_code' => $demo_inline_code,
+            'adsense_demo_fullscreen_code' => $demo_fullscreen_code,
+            'adsense_demo_header_code' => $demo_header_code,
+            'adsense_demo_footer_code' => $demo_footer_code,
             'show_advanced_text' => __('Mostra Opzioni Avanzate', 'curiosity-generator'),
             'hide_advanced_text' => __('Nascondi Opzioni Avanzate', 'curiosity-generator'),
             'error_text' => __('Si è verificato un errore. Riprova.', 'curiosity-generator')
@@ -31,9 +37,45 @@ class CG_Frontend {
     
     /**
      * Returns a demo AdSense code for testing.
+     * @param string $type Il tipo di annuncio: 'inline', 'fullscreen', 'header', 'footer'
+     * @return string Il codice HTML dell'annuncio demo
      */
-    private function get_demo_adsense_code() {
-        return '<div style="width: 100%; min-height: 250px; background-color: #f0f0f0; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; margin: 10px 0; padding: 20px; box-sizing: border-box;"><div style="text-align: center;"><strong>ANNUNCIO DEMO</strong><br>Questo è un annuncio demo per test</div></div>';
+    private function get_demo_adsense_code($type = 'inline') {
+        $backgroundColor = '#f0f0f0';
+        $borderColor = '#ccc';
+        $height = '250px';
+        $width = '100%';
+        $margin = '10px 0';
+        
+        switch($type) {
+            case 'fullscreen':
+                $backgroundColor = '#e5f2ff';
+                $borderColor = '#0073aa';
+                $height = '400px';
+                $title = 'ANNUNCIO A SCHERMO INTERO DEMO';
+                break;
+            case 'header':
+                $backgroundColor = '#ffe8e8';
+                $borderColor = '#ff6b6b';
+                $height = '100px';
+                $title = 'ANNUNCIO HEADER DEMO';
+                break;
+            case 'footer':
+                $backgroundColor = '#e6ffe8';
+                $borderColor = '#5cb85c';
+                $height = '100px';
+                $title = 'ANNUNCIO FOOTER DEMO';
+                break;
+            case 'inline':
+            default:
+                $backgroundColor = '#f0f0f0';
+                $borderColor = '#ccc';
+                $height = '250px';
+                $title = 'ANNUNCIO INTERNO DEMO';
+                break;
+        }
+        
+        return '<div style="width: ' . $width . '; min-height: ' . $height . '; background-color: ' . $backgroundColor . '; border: 1px solid ' . $borderColor . '; display: flex; align-items: center; justify-content: center; margin: ' . $margin . '; padding: 20px; box-sizing: border-box;"><div style="text-align: center;"><strong>' . $title . '</strong><br>Questo è un annuncio demo per test<br><small>Sostituiscilo con il tuo codice AdSense reale</small></div></div>';
     }
     
     /**
@@ -104,11 +146,11 @@ class CG_Frontend {
             $credits->add_generation_credits($user_id);
         }
         
-        // Get ad codes
+        // Get ad codes or use demo ads
         $inline_ad_code = get_option('cg_adsense_inline_code', '');
         $header_ad_code = get_option('cg_adsense_header_code', '');
         $footer_ad_code = get_option('cg_adsense_footer_code', '');
-        $demo_ad_code = $this->get_demo_adsense_code();
+        $fullscreen_ad_code = get_option('cg_adsense_fullscreen_code', '');
         
         // Prepare response data
         $data = array(
@@ -118,9 +160,10 @@ class CG_Frontend {
             'post_contents' => $post_contents,
             'message' => __('Curiosità generate con successo!', 'curiosity-generator'),
             'credits' => $user_id ? $credits->get_user_credits($user_id) : 0,
-            'inline_ad' => !empty($inline_ad_code) ? $inline_ad_code : $demo_ad_code,
-            'header_ad' => !empty($header_ad_code) ? $header_ad_code : $demo_ad_code,
-            'footer_ad' => !empty($footer_ad_code) ? $footer_ad_code : $demo_ad_code
+            'inline_ad' => !empty($inline_ad_code) ? $inline_ad_code : $this->get_demo_adsense_code('inline'),
+            'header_ad' => !empty($header_ad_code) ? $header_ad_code : $this->get_demo_adsense_code('header'),
+            'footer_ad' => !empty($footer_ad_code) ? $footer_ad_code : $this->get_demo_adsense_code('footer'),
+            'fullscreen_ad' => !empty($fullscreen_ad_code) ? $fullscreen_ad_code : $this->get_demo_adsense_code('fullscreen')
         );
         
         wp_send_json_success($data);

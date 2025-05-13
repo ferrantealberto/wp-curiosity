@@ -133,7 +133,14 @@ private function build_prompt($params) {
             preg_match('/Testo della curiosità:\s*(.*?)(?=Tag suggeriti:|$)/s', $item, $text_matches);
             preg_match('/Tag suggeriti:\s*(.*?)$/s', $item, $tags_matches);
 
+            // Ottieni il testo e decodifica subito le entità HTML
             $text = isset($text_matches[1]) ? trim($text_matches[1]) : '';
+            // Decodifica le entità HTML in caratteri normali
+            $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            // Rimuovi ogni possibile carattere di controllo e normalizza gli spazi
+            $text = preg_replace('/[\x00-\x1F\x7F]/u', '', $text);
+            $text = preg_replace('/\s+/', ' ', $text);
+
             $tags_string = isset($tags_matches[1]) ? trim($tags_matches[1]) : '';
 
             // Clean up tags

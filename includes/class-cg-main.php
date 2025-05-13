@@ -104,6 +104,8 @@ class CG_Main {
             'cg_default_author' => 1,
             'cg_adsense_inline_code' => '',
             'cg_adsense_fullscreen_code' => '',
+            'cg_adsense_header_code' => '',
+            'cg_adsense_footer_code' => '',
             'cg_fullscreen_ad_frequency' => 5,
             'cg_generation_credits' => 5,
             'cg_view_credits' => 1

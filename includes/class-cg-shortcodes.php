@@ -18,13 +18,13 @@ class CG_Shortcodes {
             'curiosity_generator_form'
         );
         
-        // Check if OpenRouter API key is set
+        // Check if API key is set
         $api_key = get_option('cg_openrouter_api_key', '');
         if (empty($api_key)) {
             if (current_user_can('manage_options')) {
-                return '<div class="cg-error">' . __('Please configure your OpenRouter API key in the plugin settings.', 'curiosity-generator') . '</div>';
+                return '<div class="cg-error">' . __('Per favore configura la chiave API nelle impostazioni del plugin.', 'curiosity-generator') . '</div>';
             } else {
-                return '<div class="cg-error">' . __('The curiosity generator is currently unavailable. Please try again later.', 'curiosity-generator') . '</div>';
+                return '<div class="cg-error">' . __('Il generatore di curiosità è attualmente non disponibile. Riprova più tardi.', 'curiosity-generator') . '</div>';
             }
         }
         

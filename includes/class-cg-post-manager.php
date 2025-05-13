@@ -14,11 +14,12 @@ class CG_Post_Manager {
         }
         
         // Create post title from the first few words of the curiosity
-        $words = explode(' ', $curiosity['text']);
+        $text = html_entity_decode(wp_strip_all_tags($curiosity['text']), ENT_QUOTES, 'UTF-8');
+        $words = explode(' ', $text);
         $title_words = array_slice($words, 0, 8);
         $title = implode(' ', $title_words);
         if (count($words) > 8) {
-            $title .= '...';
+            $title .= '…'; // Usa il carattere Unicode per l'ellipsis
         }
         
         // Prepare post data

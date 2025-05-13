@@ -40,7 +40,7 @@
         });
         
         // Close fullscreen ad
-        $('.cg-fullscreen-ad-close').on('click', function() {
+        $(document).on('click', '.cg-fullscreen-ad-close', function() {
             $('#cg-fullscreen-ad-container').fadeOut();
         });
         
@@ -100,13 +100,6 @@
         function displayResults(data) {
             var $list = $('#cg-curiosities-list');
             $list.empty();
-            
-            // Insert inline ads
-            var adCode = data.inline_ad || cg_ajax_object.adsense_demo_code;
-            if (adCode) {
-                $('#cg-inline-ad-top').html(adCode);
-                $('#cg-inline-ad-bottom').html(adCode);
-            }
             
             // Display each curiosity
             for (var i = 0; i < data.post_contents.length; i++) {

@@ -27,6 +27,8 @@ class CG_Admin {
         register_setting('cg_settings_group', 'cg_llm_model');
         register_setting('cg_settings_group', 'cg_adsense_inline_code');
         register_setting('cg_settings_group', 'cg_adsense_fullscreen_code');
+        register_setting('cg_settings_group', 'cg_adsense_header_code');
+        register_setting('cg_settings_group', 'cg_adsense_footer_code');
         register_setting('cg_settings_group', 'cg_fullscreen_ad_frequency', array($this, 'sanitize_number'));
         register_setting('cg_settings_group', 'cg_generation_credits', array($this, 'sanitize_number'));
         register_setting('cg_settings_group', 'cg_view_credits', array($this, 'sanitize_number'));
@@ -93,7 +95,7 @@ class CG_Admin {
                 'ajaxurl' => admin_url('admin-ajax.php'),
                 'refresh_models_text' => __('Aggiorna Modelli', 'curiosity-generator'),
                 'loading_models_text' => __('Caricamento modelli...', 'curiosity-generator'),
-                'api_key_required_text' => __('Inserisci prima una chiave API OpenRouter.', 'curiosity-generator'),
+                'api_key_required_text' => __('Inserisci prima una chiave API.', 'curiosity-generator'),
                 'models_refreshed_text' => __('Modelli aggiornati con successo!', 'curiosity-generator'),
                 'error_text' => __('Si è verificato un errore durante l\'aggiornamento dei modelli. Riprova.', 'curiosity-generator'),
                 'select_model_text' => __('Seleziona un modello', 'curiosity-generator')
