@@ -8,7 +8,7 @@
         </th>
         <td>
             <input type="password" name="cg_openrouter_api_key" id="cg_openrouter_api_key" class="regular-text" value="<?php echo esc_attr(get_option('cg_openrouter_api_key', '')); ?>" />
-            <p class="description"><?php _e('Ottieni la tua chiave API da', 'curiosity-generator'); ?> <a href="https://openrouter.ai/keys" target="_blank">OpenRouter.ai</a></p>
+            <p class="description"><?php _e('Ottieni la tua chiave API da', 'curiosity-generator'); ?> <a href="https://openrouter.ai" target="_blank">OpenRouter.ai</a></p>
         </td>
     </tr>
     <tr>

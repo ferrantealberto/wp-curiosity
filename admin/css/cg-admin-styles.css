@@ -125,6 +125,7 @@ option.cg-model-high-quality {
 .cg-filter-button {
     padding: 4px 12px;
     font-size: 13px;
+    cursor: pointer;
 }
 
 .cg-filter-button.active {
@@ -175,6 +176,7 @@ option.cg-model-high-quality {
     padding: 20px;
     border: 1px solid #ccc;
     border-top: none;
+    display: block;
 }
 
 /* Settings form styling */
@@ -218,7 +220,12 @@ option.cg-model-high-quality {
 
 /* API key field - make it longer */
 #cg_openrouter_api_key {
-    width: 400px;
+    width: 100%;
+    max-width: 400px;
+    height: 30px;
+    padding: 5px 10px;
+    border: 1px solid #7e8993;
+    border-radius: 3px;
 }
 
 /* Textarea fields */
