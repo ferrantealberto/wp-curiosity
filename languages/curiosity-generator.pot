@@ -1,0 +1,248 @@
+# Copyright (C) 2025 Manus AI Agent
+# This file is distributed under the same license as the Curiosity Generator plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Curiosity Generator 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/curiosity-generator\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2025-05-11T12:00:00+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.8.0\n"
+"X-Domain: curiosity-generator\n"
+
+#. Plugin Name of the plugin
+msgid "Curiosity Generator"
+msgstr ""
+
+#. Description of the plugin
+msgid "Generates curiosities on-demand using LLMs via OpenRouter, integrates Adsense, and includes a user credit system."
+msgstr ""
+
+#: includes/class-cg-frontend.php:93
+msgid "Curiosities generated successfully!"
+msgstr ""
+
+#: includes/class-cg-shortcodes.php:12
+msgid "Generate Curiosities"
+msgstr ""
+
+#: includes/class-cg-shortcodes.php:13
+msgid "Discover fascinating facts and curiosities!"
+msgstr ""
+
+#: includes/class-cg-shortcodes.php:22
+msgid "Please configure your OpenRouter API key in the plugin settings."
+msgstr ""
+
+#: includes/class-cg-shortcodes.php:24
+msgid "The curiosity generator is currently unavailable. Please try again later."
+msgstr ""
+
+#: includes/helpers/cg-utils.php:14
+msgid "Historical Facts"
+msgstr ""
+
+#: includes/helpers/cg-utils.php:15
+msgid "Science & Nature"
+msgstr ""
+
+#: includes/helpers/cg-utils.php:16
+msgid "Technology"
+msgstr ""
+
+#: includes/helpers/cg-utils.php:17
+msgid "Art & Culture"
+msgstr ""
+
+#: includes/helpers/cg-utils.php:18
+msgid "Geography"
+msgstr ""
+
+#: includes/helpers/cg-utils.php:19
+msgid "Famous People"
+msgstr ""
+
+#: includes/helpers/cg-utils.php:20
+msgid "Mysteries"
+msgstr ""
+
+#: includes/helpers/cg-utils.php:21
+msgid "Amazing Statistics"
+msgstr ""
+
+#: includes/helpers/cg-utils.php:22
+msgid "Word Origins"
+msgstr ""
+
+#: includes/helpers/cg-utils.php:23
+msgid "Bizarre Traditions"
+msgstr ""
+
+#: public/views/curiosity-form.php:8
+msgid "Your Credits: %s"
+msgstr ""
+
+#: public/views/curiosity-form.php:14
+msgid "Keyword or Theme"
+msgstr ""
+
+#: public/views/curiosity-form.php:15
+msgid "e.g., Space, Dinosaurs, Renaissance"
+msgstr ""
+
+#: public/views/curiosity-form.php:19
+msgid "Curiosity Type"
+msgstr ""
+
+#: public/views/curiosity-form.php:21
+msgid "Select a type"
+msgstr ""
+
+#: public/views/curiosity-form.php:31
+msgid "Time Period (Optional)"
+msgstr ""
+
+#: public/views/curiosity-form.php:32
+msgid "e.g., 19th Century, 1980s, Medieval"
+msgstr ""
+
+#: public/views/curiosity-form.php:36
+msgid "Show Advanced Options"
+msgstr ""
+
+#: public/views/curiosity-form.php:40
+msgid "Location or Geographic Context (Optional)"
+msgstr ""
+
+#: public/views/curiosity-form.php:41
+msgid "e.g., Italy, Amazon Rainforest, Urban areas"
+msgstr ""
+
+#: public/views/curiosity-form.php:45
+msgid "Specific Person or Group (Optional)"
+msgstr ""
+
+#: public/views/curiosity-form.php:46
+msgid "e.g., Einstein, Indigenous peoples, Astronomers"
+msgstr ""
+
+#: public/views/curiosity-form.php:50
+msgid "Aspect or Focus (Optional)"
+msgstr ""
+
+#: public/views/curiosity-form.php:51
+msgid "e.g., Cultural impact, Records, Innovations"
+msgstr ""
+
+#: public/views/curiosity-form.php:55
+msgid "Tone (Optional)"
+msgstr ""
+
+#: public/views/curiosity-form.php:57
+msgid "Select a tone"
+msgstr ""
+
+#: public/views/curiosity-form.php:58
+msgid "Humorous"
+msgstr ""
+
+#: public/views/curiosity-form.php:59
+msgid "Serious"
+msgstr ""
+
+#: public/views/curiosity-form.php:60
+msgid "Surprising"
+msgstr ""
+
+#: public/views/curiosity-form.php:61
+msgid "Little-known"
+msgstr ""
+
+#: public/views/curiosity-form.php:66
+msgid "Source Type (Optional)"
+msgstr ""
+
+#: public/views/curiosity-form.php:68
+msgid "Select a source type"
+msgstr ""
+
+#: public/views/curiosity-form.php:69
+msgid "Scientific studies"
+msgstr ""
+
+#: public/views/curiosity-form.php:70
+msgid "Historical records"
+msgstr ""
+
+#: public/views/curiosity-form.php:71
+msgid "Popular legends"
+msgstr ""
+
+#: public/views/curiosity-form.php:72
+msgid "Recent discoveries"
+msgstr ""
+
+#: public/views/curiosity-form.php:77
+msgid "Target Audience (Optional)"
+msgstr ""
+
+#: public/views/curiosity-form.php:79
+msgid "Select an audience"
+msgstr ""
+
+#: public/views/curiosity-form.php:80
+msgid "General public"
+msgstr ""
+
+#: public/views/curiosity-form.php:81
+msgid "Children"
+msgstr ""
+
+#: public/views/curiosity-form.php:82
+msgid "Subject experts"
+msgstr ""
+
+#: public/views/curiosity-form.php:83
+msgid "Enthusiasts"
+msgstr ""
+
+#: public/views/curiosity-form.php:88
+msgid "Custom Parameter 1 (Optional)"
+msgstr ""
+
+#: public/views/curiosity-form.php:89
+#: public/views/curiosity-form.php:94
+msgid "Custom parameter value"
+msgstr ""
+
+#: public/views/curiosity-form.php:93
+msgid "Custom Parameter 2 (Optional)"
+msgstr ""
+
+#: public/views/curiosity-form.php:99
+msgid "Number of Curiosities"
+msgstr ""
+
+#: public/views/curiosity-form.php:101
+msgid "Generate up to %d curiosities at once."
+msgstr ""
+
+#: public/views/curiosity-form.php:105
+msgid "Generate Curiosities"
+msgstr ""
+
+#: public/views/curiosity-form.php:111
+msgid "Generating curiosities..."
+msgstr ""
+
+#: public/views/curiosity-form.php:115
+msgid "Generated Curiosities"
+msgstr ""
+
+#: public/views/curiosity-form.php:119
+msgid "Generate More"
+msgstr ""

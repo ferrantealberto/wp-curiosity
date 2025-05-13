@@ -1,0 +1,183 @@
+/* Stili per il selettore di modelli */
+.cg-model-selector-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.cg-select2-models {
+    min-width: 300px;
+    max-width: 600px;
+    width: 100%;
+}
+
+#cg-refresh-models {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#cg-refresh-models .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+#cg-model-loading {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+}
+
+#cg-model-loading .spinner {
+    margin-top: 0;
+    margin-right: 10px;
+}
+
+/* Stili per Select2 */
+.select2-container {
+    width: 100% !important;
+}
+
+.select2-container--default .select2-selection--single {
+    border: 1px solid #7e8993;
+    border-radius: 3px;
+    height: 30px;
+    min-height: 30px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 30px;
+    padding-left: 8px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 28px;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: #0073aa;
+}
+
+.select2-dropdown {
+    border-color: #7e8993;
+}
+
+.select2-search--dropdown .select2-search__field {
+    border-color: #7e8993;
+    padding: 6px;
+}
+
+/* Stili per i risultati della ricerca */
+.select2-results__option {
+    padding: 8px;
+    font-size: 13px;
+}
+
+.select2-container--default .select2-results__option[aria-selected=true] {
+    background-color: #f0f0f0;
+}
+
+/* Stili per il contenitore di ricerca */
+.select2-search--dropdown {
+    padding: 8px;
+}
+
+.select2-search__field {
+    width: 100% !important;
+}
+
+/* Animazione per il pulsante di aggiornamento */
+@keyframes cg-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+#cg-refresh-models:disabled .dashicons-update {
+    animation: cg-spin 1s linear infinite;
+}
+
+/* Tabs styling */
+.nav-tab-wrapper {
+    border-bottom: 1px solid #ccc;
+    margin: 0;
+    padding-top: 9px;
+    padding-bottom: 0;
+    line-height: inherit;
+}
+
+.nav-tab {
+    margin: 0 0.2em -1px 0;
+    background: #e4e4e4;
+    color: #555;
+    font-size: 14px;
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.nav-tab-active, 
+.nav-tab:hover {
+    background: #fff;
+    color: #000;
+    border-bottom: 1px solid #fff;
+}
+
+/* Tab content */
+.tab-content {
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+
+/* Settings form styling */
+.form-table th {
+    width: 200px;
+    vertical-align: top;
+    text-align: left;
+    padding: 20px 10px 20px 0;
+}
+
+.form-table td {
+    padding: 15px 10px;
+}
+
+.form-table input[type="text"],
+.form-table input[type="password"],
+.form-table input[type="number"],
+.form-table select {
+    min-width: 300px;
+}
+
+/* Description text */
+.description {
+    font-style: italic;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Section headings */
+.tab-content h2 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Settings page intro */
+.tab-content > p {
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+/* API key field - make it longer */
+#cg_openrouter_api_key {
+    width: 400px;
+}
+
+/* Textarea fields */
+.large-text {
+    width: 100%;
+    max-width: 600px;
+}

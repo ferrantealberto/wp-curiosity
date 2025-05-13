@@ -1,0 +1,99 @@
+(function($) {
+    'use strict';
+    
+    $(document).ready(function() {
+        // Gestione della navigazione a schede
+        $('.nav-tab').on('click', function(e) {
+            e.preventDefault();
+            
+            // Aggiorna la scheda attiva
+            $('.nav-tab').removeClass('nav-tab-active');
+            $(this).addClass('nav-tab-active');
+            
+            // Mostra il contenuto della scheda selezionata
+            var target = $(this).attr('href');
+            $('.tab-content').hide();
+            $(target).show();
+        });
+        
+        // Mostra la prima scheda di default
+        $('.nav-tab:first').click();
+        
+        // Inizializza Select2 per il dropdown dei modelli
+        $('.cg-select2-models').select2({
+            width: '100%',
+            placeholder: cg_admin_object.select_model_text,
+            allowClear: true,
+            templateResult: formatModelOption
+        });
+        
+        // Formatta le opzioni del modello con evidenziazione della ricerca
+        function formatModelOption(option) {
+            if (!option.id) {
+                return option.text;
+            }
+            return $('<span>' + option.text + '</span>');
+        }
+        
+        // Pulsante per aggiornare i modelli
+        $('#cg-refresh-models').on('click', function() {
+            var $button = $(this);
+            var $loading = $('#cg-model-loading');
+            var $select = $('#cg_llm_model');
+            var apiKey = $('#cg_openrouter_api_key').val();
+            
+            if (!apiKey) {
+                alert(cg_admin_object.api_key_required_text);
+                return;
+            }
+            
+            $button.prop('disabled', true);
+            $loading.show();
+            
+            $.ajax({
+                url: cg_admin_object.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'cg_refresh_models',
+                    nonce: cg_admin_object.nonce,
+                    api_key: apiKey
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Salva il modello selezionato corrente
+                        var currentModel = $select.val();
+                        
+                        // Svuota e ripopola il select
+                        $select.empty();
+                        
+                        $.each(response.data.models, function(id, name) {
+                            var $option = $('<option></option>')
+                                .val(id)
+                                .text(name);
+                                
+                            if (id === currentModel) {
+                                $option.prop('selected', true);
+                            }
+                            
+                            $select.append($option);
+                        });
+                        
+                        // Aggiorna il dropdown Select2
+                        $select.trigger('change');
+                        
+                        alert(cg_admin_object.models_refreshed_text);
+                    } else {
+                        alert(cg_admin_object.error_text + (response.data.message || ''));
+                    }
+                },
+                error: function() {
+                    alert(cg_admin_object.error_text);
+                },
+                complete: function() {
+                    $button.prop('disabled', false);
+                    $loading.hide();
+                }
+            });
+        });
+    });
+})(jQuery);

@@ -1,0 +1,396 @@
+# Translation of Curiosity Generator in Italian
+# This file is distributed under the same license as the Curiosity Generator plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Curiosity Generator 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/curiosity-generator\n"
+"POT-Creation-Date: 2025-05-11T12:00:00+00:00\n"
+"PO-Revision-Date: 2025-05-12 19:13+0200\n"
+"Last-Translator: \n"
+"Language-Team: Italian\n"
+"Language: it_IT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 3.6\n"
+"X-Domain: curiosity-generator\n"
+
+#. Plugin Name of the plugin
+msgid "Curiosity Generator"
+msgstr "Generatore di Curiosità"
+
+#. Description of the plugin
+msgid ""
+"Generates curiosities on-demand using LLMs via OpenRouter, integrates Adsense, and includes a user credit "
+"system."
+msgstr ""
+"Genera curiosità su richiesta utilizzando LLM tramite OpenRouter, integra Adsense e include un sistema di "
+"crediti utente."
+
+#: includes/class-cg-frontend.php:93
+msgid "Curiosities generated successfully!"
+msgstr "Curiosità generate con successo!"
+
+#: includes/class-cg-shortcodes.php:12 public/views/curiosity-form.php:105
+msgid "Generate Curiosities"
+msgstr "Genera Curiosità"
+
+#: includes/class-cg-shortcodes.php:13
+msgid "Discover fascinating facts and curiosities!"
+msgstr "Scopri fatti e curiosità affascinanti!"
+
+#: includes/class-cg-shortcodes.php:22
+msgid "Please configure your OpenRouter API key in the plugin settings."
+msgstr "Configura la tua chiave API OpenRouter nelle impostazioni del plugin."
+
+#: includes/class-cg-shortcodes.php:24
+msgid "The curiosity generator is currently unavailable. Please try again later."
+msgstr "Il generatore di curiosità non è attualmente disponibile. Riprova più tardi."
+
+#: includes/helpers/cg-utils.php:14
+msgid "Historical Facts"
+msgstr "Fatti Storici"
+
+#: includes/helpers/cg-utils.php:15
+msgid "Science & Nature"
+msgstr "Scienza e Natura"
+
+#: includes/helpers/cg-utils.php:16
+msgid "Technology"
+msgstr "Tecnologia"
+
+#: includes/helpers/cg-utils.php:17
+msgid "Art & Culture"
+msgstr "Arte e Cultura"
+
+#: includes/helpers/cg-utils.php:18
+msgid "Geography"
+msgstr "Geografia"
+
+#: includes/helpers/cg-utils.php:19
+msgid "Famous People"
+msgstr "Personaggi Famosi"
+
+#: includes/helpers/cg-utils.php:20
+msgid "Mysteries"
+msgstr "Misteri"
+
+#: includes/helpers/cg-utils.php:21
+msgid "Amazing Statistics"
+msgstr "Statistiche Incredibili"
+
+#: includes/helpers/cg-utils.php:22
+msgid "Word Origins"
+msgstr "Origine delle Parole"
+
+#: includes/helpers/cg-utils.php:23
+msgid "Bizarre Traditions"
+msgstr "Tradizioni Bizzarre"
+
+#: public/views/curiosity-form.php:8
+msgid "Your Credits: %s"
+msgstr "I tuoi Crediti: %s"
+
+#: public/views/curiosity-form.php:14
+msgid "Keyword or Theme"
+msgstr "Parola Chiave o Tema"
+
+#: public/views/curiosity-form.php:15
+msgid "e.g., Space, Dinosaurs, Renaissance"
+msgstr "es., Spazio, Dinosauri, Rinascimento"
+
+#: public/views/curiosity-form.php:19
+msgid "Curiosity Type"
+msgstr "Tipo di Curiosità"
+
+#: public/views/curiosity-form.php:21
+msgid "Select a type"
+msgstr "Seleziona un tipo"
+
+#: public/views/curiosity-form.php:31
+msgid "Time Period (Optional)"
+msgstr "Periodo Temporale (Opzionale)"
+
+#: public/views/curiosity-form.php:32
+msgid "e.g., 19th Century, 1980s, Medieval"
+msgstr "es., XIX Secolo, Anni '80, Medioevo"
+
+#: public/views/curiosity-form.php:36
+msgid "Show Advanced Options"
+msgstr "Mostra Opzioni Avanzate"
+
+#: public/views/curiosity-form.php:40
+msgid "Location or Geographic Context (Optional)"
+msgstr "Luogo o Contesto Geografico (Opzionale)"
+
+#: public/views/curiosity-form.php:41
+msgid "e.g., Italy, Amazon Rainforest, Urban areas"
+msgstr "es., Italia, Foresta Amazzonica, Aree urbane"
+
+#: public/views/curiosity-form.php:45
+msgid "Specific Person or Group (Optional)"
+msgstr "Persona o Gruppo Specifico (Opzionale)"
+
+#: public/views/curiosity-form.php:46
+msgid "e.g., Einstein, Indigenous peoples, Astronomers"
+msgstr "es., Einstein, Popoli indigeni, Astronomi"
+
+#: public/views/curiosity-form.php:50
+msgid "Aspect or Focus (Optional)"
+msgstr "Aspetto o Focus (Opzionale)"
+
+#: public/views/curiosity-form.php:51
+msgid "e.g., Cultural impact, Records, Innovations"
+msgstr "es., Impatto culturale, Record, Innovazioni"
+
+#: public/views/curiosity-form.php:55
+msgid "Tone (Optional)"
+msgstr "Tono (Opzionale)"
+
+#: public/views/curiosity-form.php:57
+msgid "Select a tone"
+msgstr "Seleziona un tono"
+
+#: public/views/curiosity-form.php:58
+msgid "Humorous"
+msgstr "Umoristico"
+
+#: public/views/curiosity-form.php:59
+msgid "Serious"
+msgstr "Serio"
+
+#: public/views/curiosity-form.php:60
+msgid "Surprising"
+msgstr "Sorprendente"
+
+#: public/views/curiosity-form.php:61
+msgid "Little-known"
+msgstr "Poco conosciuto"
+
+#: public/views/curiosity-form.php:66
+msgid "Source Type (Optional)"
+msgstr "Tipo di Fonte (Opzionale)"
+
+#: public/views/curiosity-form.php:68
+msgid "Select a source type"
+msgstr "Seleziona un tipo di fonte"
+
+#: public/views/curiosity-form.php:69
+msgid "Scientific studies"
+msgstr "Studi scientifici"
+
+#: public/views/curiosity-form.php:70
+msgid "Historical records"
+msgstr "Documenti storici"
+
+#: public/views/curiosity-form.php:71
+msgid "Popular legends"
+msgstr "Leggende popolari"
+
+#: public/views/curiosity-form.php:72
+msgid "Recent discoveries"
+msgstr "Scoperte recenti"
+
+#: public/views/curiosity-form.php:77
+msgid "Target Audience (Optional)"
+msgstr "Pubblico di Riferimento (Opzionale)"
+
+#: public/views/curiosity-form.php:79
+msgid "Select an audience"
+msgstr "Seleziona un pubblico"
+
+#: public/views/curiosity-form.php:80
+msgid "General public"
+msgstr "Pubblico generale"
+
+#: public/views/curiosity-form.php:81
+msgid "Children"
+msgstr "Bambini"
+
+#: public/views/curiosity-form.php:82
+msgid "Subject experts"
+msgstr "Esperti del settore"
+
+#: public/views/curiosity-form.php:83
+msgid "Enthusiasts"
+msgstr "Appassionati"
+
+#: public/views/curiosity-form.php:88
+msgid "Custom Parameter 1 (Optional)"
+msgstr "Parametro Personalizzato 1 (Opzionale)"
+
+#: public/views/curiosity-form.php:89 public/views/curiosity-form.php:94
+msgid "Custom parameter value"
+msgstr "Valore del parametro personalizzato"
+
+#: public/views/curiosity-form.php:93
+msgid "Custom Parameter 2 (Optional)"
+msgstr "Parametro Personalizzato 2 (Opzionale)"
+
+#: public/views/curiosity-form.php:99
+msgid "Number of Curiosities"
+msgstr "Numero di Curiosità"
+
+#: public/views/curiosity-form.php:101
+msgid "Generate up to %d curiosities at once."
+msgstr "Genera fino a %d curiosità alla volta."
+
+#: public/views/curiosity-form.php:111
+msgid "Generating curiosities..."
+msgstr "Generazione di curiosità in corso..."
+
+#: public/views/curiosity-form.php:115
+msgid "Generated Curiosities"
+msgstr "Curiosità Generate"
+
+#: public/views/curiosity-form.php:119
+msgid "Generate More"
+msgstr "Genera Altre"
+
+# Admin Settings Page
+msgid "Curiosity Generator Settings"
+msgstr "Impostazioni Generatore di Curiosità"
+
+msgid "API Settings"
+msgstr "Impostazioni API"
+
+msgid "Ads Settings"
+msgstr "Impostazioni Annunci"
+
+msgid "Credits Settings"
+msgstr "Impostazioni Crediti"
+
+msgid "General Settings"
+msgstr "Impostazioni Generali"
+
+msgid "OpenRouter API Settings"
+msgstr "Impostazioni API OpenRouter"
+
+msgid "Enter your OpenRouter API key and select the LLM model to use for generating curiosities."
+msgstr "Inserisci la tua chiave API OpenRouter e seleziona il modello LLM da utilizzare per generare curiosità."
+
+msgid "API Key"
+msgstr "Chiave API"
+
+msgid "Get your API key from"
+msgstr "Ottieni la tua chiave API da"
+
+msgid "LLM Model"
+msgstr "Modello LLM"
+
+msgid ""
+"Select the LLM model to use for generating curiosities. Higher quality models may cost more credits at "
+"OpenRouter."
+msgstr ""
+"Seleziona il modello LLM da utilizzare per generare curiosità. I modelli di qualità superiore potrebbero "
+"costare più crediti su OpenRouter."
+
+msgid "AdSense Settings"
+msgstr "Impostazioni AdSense"
+
+msgid "Configure your AdSense ads for the curiosity generator."
+msgstr "Configura i tuoi annunci AdSense per il generatore di curiosità."
+
+msgid "Inline Ad Code"
+msgstr "Codice Annuncio Inline"
+
+msgid "Enter your AdSense code for inline ads. These will appear before and after the curiosities."
+msgstr "Inserisci il tuo codice AdSense per gli annunci inline. Questi appariranno prima e dopo le curiosità."
+
+msgid "Fullscreen Ad Code"
+msgstr "Codice Annuncio a Schermo Intero"
+
+msgid ""
+"Enter your AdSense code for fullscreen ads. These will appear after the first generation, after the last "
+"curiosity in a batch, and at the frequency set below."
+msgstr ""
+"Inserisci il tuo codice AdSense per gli annunci a schermo intero. Questi appariranno dopo la prima "
+"generazione, dopo l'ultima curiosità in un batch e alla frequenza impostata di seguito."
+
+msgid "Fullscreen Ad Frequency"
+msgstr "Frequenza Annunci a Schermo Intero"
+
+msgid "How often to show fullscreen ads (e.g., every 5 batches of curiosities)."
+msgstr "Con quale frequenza mostrare gli annunci a schermo intero (es. ogni 5 batch di curiosità)."
+
+msgid "Configure the credit system for logged-in users."
+msgstr "Configura il sistema di crediti per gli utenti registrati."
+
+msgid "Generation Credits"
+msgstr "Crediti per Generazione"
+
+msgid "How many credits a user earns for generating a batch of curiosities."
+msgstr "Quanti crediti guadagna un utente per la generazione di un batch di curiosità."
+
+msgid "View Credits"
+msgstr "Crediti per Visualizzazione"
+
+msgid "How many credits a user earns when someone views a curiosity they generated."
+msgstr "Quanti crediti guadagna un utente quando qualcuno visualizza una curiosità da loro generata."
+
+msgid "Configure general settings for the curiosity generator."
+msgstr "Configura le impostazioni generali per il generatore di curiosità."
+
+msgid "Max Curiosities"
+msgstr "Numero Massimo di Curiosità"
+
+msgid "Maximum number of curiosities that can be generated at once (1-20)."
+msgstr "Numero massimo di curiosità che possono essere generate contemporaneamente (1-20)."
+
+msgid "Min Curiosity Length"
+msgstr "Lunghezza Minima Curiosità"
+
+msgid "Minimum length (in words) for each generated curiosity."
+msgstr "Lunghezza minima (in parole) per ogni curiosità generata."
+
+msgid "Default Author"
+msgstr "Autore Predefinito"
+
+msgid "The default author for curiosities generated by non-logged-in users."
+msgstr "L'autore predefinito per le curiosità generate da utenti non registrati."
+
+msgid "Modello LLM"
+msgstr "Modello LLM"
+
+msgid "Aggiorna Modelli"
+msgstr "Aggiorna Modelli"
+
+msgid "Caricamento modelli..."
+msgstr "Caricamento modelli..."
+
+msgid "Inserisci prima una chiave API OpenRouter."
+msgstr "Inserisci prima una chiave API OpenRouter."
+
+msgid "Modelli aggiornati con successo!"
+msgstr "Modelli aggiornati con successo!"
+
+msgid "Si è verificato un errore durante l'aggiornamento dei modelli. Riprova."
+msgstr "Si è verificato un errore durante l'aggiornamento dei modelli. Riprova."
+
+msgid "È richiesta la chiave API."
+msgstr "È richiesta la chiave API."
+
+msgid "Non hai il permesso di eseguire questa azione."
+msgstr "Non hai il permesso di eseguire questa azione."
+
+msgid "Seleziona un modello"
+msgstr "Seleziona un modello"
+
+msgid "Error: "
+msgstr "Errore: "
+
+msgid "Impostazioni API OpenRouter"
+msgstr "Impostazioni API OpenRouter"
+
+msgid "Inserisci la tua chiave API OpenRouter e seleziona il modello LLM da utilizzare per generare curiosità."
+msgstr "Inserisci la tua chiave API OpenRouter e seleziona il modello LLM da utilizzare per generare curiosità."
+
+msgid "Hide Advanced Options"
+msgstr "Nascondi Opzioni Avanzate"
+
+msgid "An error occurred. Please try again."
+msgstr "Si è verificato un errore. Riprova."
+
+msgid "Impostazioni Generatore di Curiosità"
+msgstr "Impostazioni Generatore di Curiosità"
