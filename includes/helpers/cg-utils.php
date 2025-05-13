@@ -130,6 +130,25 @@ function cg_get_default_types() {
 }
 
 /**
+ * Get available languages for curiosity generation.
+ */
+function cg_get_available_languages() {
+    return array(
+        'italiano' => __('Italiano', 'curiosity-generator'),
+        'english' => __('Inglese', 'curiosity-generator'),
+        'espanol' => __('Spagnolo', 'curiosity-generator'),
+        'francais' => __('Francese', 'curiosity-generator'),
+        'deutsch' => __('Tedesco', 'curiosity-generator'),
+        'portugues' => __('Portoghese', 'curiosity-generator'),
+        'русский' => __('Russo', 'curiosity-generator'),
+        '中文' => __('Cinese', 'curiosity-generator'),
+        '日本語' => __('Giapponese', 'curiosity-generator'),
+        'العربية' => __('Arabo', 'curiosity-generator'),
+        'हिन्दी' => __('Hindi', 'curiosity-generator')
+    );
+}
+
+/**
  * Format a number of credits for display.
  */
 function cg_format_credits($credits) {

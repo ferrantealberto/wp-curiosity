@@ -44,6 +44,19 @@
         </div>
         
         <div class="cg-form-group">
+            <label for="cg-language"><?php _e('Lingua', 'curiosity-generator'); ?> <span class="required">*</span></label>
+            <select id="cg-language" name="language" required>
+                <?php
+                $languages = cg_get_available_languages();
+                foreach ($languages as $lang_id => $lang_name) {
+                    $selected = ($lang_id === 'italiano') ? 'selected' : '';
+                    echo '<option value="' . esc_attr($lang_id) . '" ' . $selected . '>' . esc_html($lang_name) . '</option>';
+                }
+                ?>
+            </select>
+        </div>
+        
+        <div class="cg-form-group">
             <label for="cg-period"><?php _e('Periodo Temporale (Opzionale)', 'curiosity-generator'); ?></label>
             <input type="text" id="cg-period" name="period" placeholder="<?php _e('es., XIX Secolo, Anni \'80, Medioevo', 'curiosity-generator'); ?>">
         </div>

@@ -57,6 +57,7 @@
                 nonce: cg_ajax_object.nonce,
                 keyword: $('#cg-keyword').val(),
                 type: $('#cg-type').val(),
+                language: $('#cg-language').val(),
                 period: $('#cg-period').val(),
                 count: $('#cg-count').val(),
                 param1: $('#cg-param1').val(),

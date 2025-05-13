@@ -58,6 +58,7 @@ class CG_Post_Manager {
         add_post_meta($post_id, 'cg_generated', true);
         add_post_meta($post_id, 'cg_keyword', $params['keyword']);
         add_post_meta($post_id, 'cg_type', $params['type']);
+        add_post_meta($post_id, 'cg_language', $params['language']);
         add_post_meta($post_id, 'cg_view_count', 0);
         
         return $post_id;

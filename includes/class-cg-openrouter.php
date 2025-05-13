@@ -83,11 +83,13 @@ private function build_prompt($params) {
     $type = sanitize_text_field($params['type']);
     $count = intval($params['count']);
     $min_length = get_option('cg_min_curiosity_length', 100);
+    $language = !empty($params['language']) ? sanitize_text_field($params['language']) : 'italiano';
 
-    // Modificato per generare contenuto in italiano
-    $prompt = "Genera {$count} curiosità uniche e interessanti in lingua italiana. Ogni curiosità deve essere un paragrafo ben scritto, di almeno {$min_length} parole, adatto per un articolo di blog e per l'indicizzazione su Google News. Le curiosità devono essere fattualmente accurate per quanto possibile.\n\n";
+    // Genera contenuto nella lingua selezionata (default: italiano)
+    $prompt = "Genera {$count} curiosità uniche e interessanti in lingua {$language}. Ogni curiosità deve essere un paragrafo ben scritto, di almeno {$min_length} parole, adatto per un articolo di blog e per l'indicizzazione su Google News. Le curiosità devono essere fattualmente accurate per quanto possibile.\n\n";
     $prompt .= "Tema principale/Parola chiave: \"{$keyword}\"\n";
-    $prompt .= "Tipologia di curiosità (obbligatoria): \"{$type}\"\n\n";
+    $prompt .= "Tipologia di curiosità (obbligatoria): \"{$type}\"\n";
+    $prompt .= "Lingua (obbligatoria): \"{$language}\"\n\n";
 
     // Add optional parameters if provided
     if (!empty($params['period'])) {
@@ -102,7 +104,7 @@ private function build_prompt($params) {
         }
     }
 
-    $prompt .= "\nPer ogni curiosità generata, fornisci anche una lista di 3-5 tag pertinenti in italiano che descrivano il suo contenuto specifico, oltre ai parametri usati.\n\n";
+    $prompt .= "\nPer ogni curiosità generata, fornisci anche una lista di 3-5 tag pertinenti in {$language} che descrivano il suo contenuto specifico, oltre ai parametri usati.\n\n";
     $prompt .= "Formato di output desiderato per ogni curiosità:\n";
     $prompt .= "Testo della curiosità: [Testo generato qui]\n";
     $prompt .= "Tag suggeriti: [tag1, tag2, tag3, tag4, tag5]\n\n";

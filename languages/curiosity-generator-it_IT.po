@@ -394,3 +394,39 @@ msgstr "Si è verificato un errore. Riprova."
 
 msgid "Impostazioni Generatore di Curiosità"
 msgstr "Impostazioni Generatore di Curiosità"
+
+msgid "Lingua"
+msgstr "Lingua"
+
+msgid "Italiano"
+msgstr "Italiano"
+
+msgid "Inglese"
+msgstr "Inglese"
+
+msgid "Spagnolo"
+msgstr "Spagnolo"
+
+msgid "Francese"
+msgstr "Francese"
+
+msgid "Tedesco"
+msgstr "Tedesco"
+
+msgid "Portoghese"
+msgstr "Portoghese"
+
+msgid "Russo"
+msgstr "Russo"
+
+msgid "Cinese"
+msgstr "Cinese"
+
+msgid "Giapponese"
+msgstr "Giapponese"
+
+msgid "Arabo" 
+msgstr "Arabo"
+
+msgid "Hindi"
+msgstr "Hindi"

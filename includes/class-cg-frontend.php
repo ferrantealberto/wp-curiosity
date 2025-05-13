@@ -86,6 +86,7 @@ class CG_Frontend {
         
         $keyword = isset($_POST['keyword']) ? sanitize_text_field($_POST['keyword']) : '';
         $type = isset($_POST['type']) ? sanitize_text_field($_POST['type']) : '';
+        $language = isset($_POST['language']) ? sanitize_text_field($_POST['language']) : 'italiano';
         $period = isset($_POST['period']) ? sanitize_text_field($_POST['period']) : '';
         $count = isset($_POST['count']) ? intval($_POST['count']) : 1;
         
@@ -100,6 +101,7 @@ class CG_Frontend {
         $params = array(
             'keyword' => $keyword,
             'type' => $type,
+            'language' => $language,
             'period' => $period,
             'count' => $count
         );
