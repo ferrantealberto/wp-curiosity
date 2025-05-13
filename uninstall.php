@@ -12,14 +12,18 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 $options = array(
     'cg_openrouter_api_key',
     'cg_llm_model',
+    'cg_image_llm_model',
     'cg_adsense_inline_code',
     'cg_adsense_fullscreen_code',
+    'cg_adsense_header_code',
+    'cg_adsense_footer_code',
     'cg_fullscreen_ad_frequency',
     'cg_generation_credits',
     'cg_view_credits',
     'cg_max_curiosities',
     'cg_min_curiosity_length',
-    'cg_default_author'
+    'cg_default_author',
+    'cg_disable_demo_ads'
 );
 
 foreach ($options as $option) {
@@ -53,4 +57,5 @@ if ($category) {
 
 // Remove user meta for credits
 global $wpdb;
-$wpdb->delete($wpdb->usermeta, array('meta_key' => 'cg_user_credits'));
+$wpdb->delete($wpdb->usermeta, array('meta_key' => 'cg_generation_credits'));
+$wpdb->delete($wpdb->usermeta, array('meta_key' => 'cg_view_credits'));

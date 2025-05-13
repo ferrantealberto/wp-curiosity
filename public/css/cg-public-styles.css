@@ -296,6 +296,47 @@
     background-color: #1da851;
 }
 
+/* Stile per il pulsante di generazione immagine */
+.cg-generate-image-btn {
+    display: inline-block;
+    margin: 15px 0;
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.cg-generate-image-btn:hover {
+    background-color: #45a049;
+}
+
+.cg-generate-image-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.cg-generate-image-btn.cg-image-generated {
+    background-color: #666;
+    cursor: default;
+}
+
+.cg-image-preview {
+    margin: 15px 0;
+    max-width: 100%;
+    text-align: center;
+}
+
+.cg-image-preview img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .cg-container {

@@ -83,6 +83,10 @@ class CG_Main {
         // AJAX handlers
         add_action('wp_ajax_generate_curiosity', array($frontend, 'handle_generate_curiosity'));
         add_action('wp_ajax_nopriv_generate_curiosity', array($frontend, 'handle_generate_curiosity'));
+        
+        // Nuovo handler AJAX per la generazione di immagini in evidenza
+        add_action('wp_ajax_generate_featured_image', array($frontend, 'handle_generate_featured_image'));
+        add_action('wp_ajax_nopriv_generate_featured_image', array($frontend, 'handle_generate_featured_image'));
 
         // Credits system
         add_action('the_content', array($credits, 'track_post_view'), 10);
@@ -105,6 +109,7 @@ class CG_Main {
         $default_options = array(
             'cg_openrouter_api_key' => '',
             'cg_llm_model' => 'anthropic/claude-3-opus',
+            'cg_image_llm_model' => 'stability/stable-diffusion-xl-1024-v1-0',
             'cg_max_curiosities' => 5,
             'cg_min_curiosity_length' => 100,
             'cg_default_author' => 1,

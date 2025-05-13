@@ -154,7 +154,7 @@
     
     <div id="cg-results" class="cg-results" style="display:none">
         <h3><?php _e('Curiosità Generate', 'curiosity-generator'); ?></h3>
-        <div id="cg-curiosities-list"></div>
+        <div id="cg-curiosities-list" class="cg-curiosities-list"></div>
         <button id="cg-generate-more" class="cg-button-secondary"><?php _e('Genera Altre', 'curiosity-generator'); ?></button>
     </div>
     

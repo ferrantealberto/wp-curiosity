@@ -112,6 +112,28 @@ function cg_get_default_models() {
 }
 
 /**
+ * Ottieni i modelli di generazione immagini predefiniti per OpenRouter.
+ */
+function cg_get_default_image_models() {
+    return array(
+        'stability/stable-diffusion-xl-1024-v1-0' => 'Stable Diffusion XL 1.0',
+        'openai/dall-e-3' => 'DALL·E 3',
+        'anthropic/claude-3-haiku' => 'Claude 3 Haiku (Vision)',
+        'midjourney/mj' => 'Midjourney',
+        'stability/stable-diffusion-3-large' => 'Stable Diffusion 3 Large',
+        'google/imagen-2' => 'Google Imagen 2'
+    );
+}
+
+/**
+ * Ottieni i modelli di generazione immagini disponibili per OpenRouter.
+ */
+function cg_get_available_image_models() {
+    // In una versione più avanzata, si potrebbe implementare il recupero dei modelli disponibili da OpenRouter
+    return cg_get_default_image_models();
+}
+
+/**
  * Get default curiosity types.
  */
 function cg_get_default_types() {

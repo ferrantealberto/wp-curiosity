@@ -44,6 +44,47 @@
             $('#cg-fullscreen-ad-container').fadeOut();
         });
         
+        // Gestione click sul pulsante "Genera Immagine in Evidenza"
+        $(document).on('click', '.cg-generate-image-btn', function() {
+            var $button = $(this);
+            var postId = $button.data('post-id');
+            
+            // Disabilita il pulsante e mostra il testo di caricamento
+            $button.prop('disabled', true).text('Generazione in corso...');
+            
+            // Invia la richiesta AJAX
+            $.ajax({
+                url: cg_ajax_object.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'generate_featured_image',
+                    nonce: cg_ajax_object.nonce,
+                    post_id: postId
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Mostra un'anteprima dell'immagine
+                        var $imagePreview = $('<div class="cg-image-preview"></div>');
+                        var $image = $('<img>').attr('src', response.data.image_url).attr('alt', 'Immagine in evidenza');
+                        $imagePreview.append($image);
+                        $button.after($imagePreview);
+                        
+                        // Aggiorna il testo del pulsante e lo rende non cliccabile
+                        $button.text('Immagine generata!').addClass('cg-image-generated');
+                    } else {
+                        // Mostra l'errore e riabilita il pulsante
+                        alert(response.data || 'Errore durante la generazione dell\'immagine.');
+                        $button.prop('disabled', false).text('Genera Immagine in Evidenza');
+                    }
+                },
+                error: function() {
+                    // Gestisci l'errore e riabilita il pulsante
+                    alert('Errore di connessione. Riprova più tardi.');
+                    $button.prop('disabled', false).text('Genera Immagine in Evidenza');
+                }
+            });
+        });
+        
         // Function to start the generation process
         function startGeneration() {
             // Show loading
@@ -120,6 +161,10 @@
                     .attr('href', data.post_urls[i])
                     .text('Visualizza Post Completo');
                 
+                // Pulsante per generare l'immagine in evidenza
+                var $generateImageBtn = $('<button class="cg-generate-image-btn" data-post-id="' + data.post_ids[i] + '"></button>')
+                    .text('Genera Immagine in Evidenza');
+                
                 // Create social sharing buttons
                 var $socialShare = $('<div class="cg-social-share"></div>');
                 
@@ -158,7 +203,8 @@
                 // Add all buttons to social share container
                 $socialShare.append($facebookBtn, $twitterBtn, $linkedinBtn, $pinterestBtn, $whatsappBtn);
                 
-                $item.append($title, $content, $link, $socialShare);
+                // Aggiunge il pulsante di generazione immagine dopo il link al post
+                $item.append($title, $content, $link, $generateImageBtn, $socialShare);
                 $list.append($item);
             }
             

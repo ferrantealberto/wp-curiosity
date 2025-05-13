@@ -37,4 +37,24 @@
             </div>
         </td>
     </tr>
+    <tr>
+        <th scope="row">
+            <label for="cg_image_llm_model"><?php _e('Modello per Immagini', 'curiosity-generator'); ?></label>
+        </th>
+        <td>
+            <div class="cg-model-selector-wrapper">
+                <select name="cg_image_llm_model" id="cg_image_llm_model" class="cg-select2-models">
+                    <?php
+                    $current_image_model = get_option('cg_image_llm_model', 'stability/stable-diffusion-xl-1024-v1-0');
+                    $image_models = cg_get_available_image_models();
+                    
+                    foreach ($image_models as $model_id => $model_name) {
+                        echo '<option value="' . esc_attr($model_id) . '" ' . selected($current_image_model, $model_id, false) . '>' . esc_html($model_name) . '</option>';
+                    }
+                    ?>
+                </select>
+            </div>
+            <p class="description"><?php _e('Seleziona il modello LLM da utilizzare per generare immagini in evidenza per le curiosità.', 'curiosity-generator'); ?></p>
+        </td>
+    </tr>
 </table>

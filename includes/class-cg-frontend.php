@@ -176,4 +176,56 @@ class CG_Frontend {
         
         wp_send_json_success($data);
     }
+
+    /**
+     * Handle AJAX request for generating featured image.
+     */
+    public function handle_generate_featured_image() {
+        check_ajax_referer('cg_generate_nonce', 'nonce');
+        
+        $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
+        
+        if (!$post_id) {
+            wp_send_json_error(__('ID del post non valido.', 'curiosity-generator'));
+        }
+        
+        // Verifica se il post esiste e se è una curiosità
+        $post = get_post($post_id);
+        if (!$post || !get_post_meta($post_id, 'cg_generated', true)) {
+            wp_send_json_error(__('Post non valido o non è una curiosità generata.', 'curiosity-generator'));
+        }
+        
+        // Ottieni il titolo e il contenuto per la generazione del prompt
+        $title = get_the_title($post_id);
+        $content = wp_strip_all_tags($post->post_content);
+        $keyword = get_post_meta($post_id, 'cg_keyword', true);
+        $type = get_post_meta($post_id, 'cg_type', true);
+        
+        // Crea un prompt per la generazione dell'immagine
+        $prompt = "Crea un'immagine che illustri questa curiosità: '{$title}'. ";
+        $prompt .= "Argomento principale: {$keyword}. ";
+        $prompt .= "Tipo di curiosità: {$type}. ";
+        $prompt .= "L'immagine deve essere dettagliata, realistica e adatta per un blog educativo.";
+        
+        // Limita la lunghezza del prompt
+        $prompt = substr($prompt, 0, 1000);
+        
+        // Inizializza OpenRouter
+        $openrouter = new CG_OpenRouter();
+        
+        // Genera l'immagine
+        $result = $openrouter->generate_image($prompt, $post_id);
+        
+        if (is_wp_error($result)) {
+            wp_send_json_error($result->get_error_message());
+        }
+        
+        // Ottieni l'URL dell'immagine
+        $image_url = wp_get_attachment_image_url($result, 'full');
+        
+        wp_send_json_success(array(
+            'message' => __('Immagine in evidenza generata con successo!', 'curiosity-generator'),
+            'image_url' => $image_url
+        ));
+    }
 }

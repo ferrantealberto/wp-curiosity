@@ -75,46 +75,46 @@ class CG_OpenRouter {
         return $this->parse_response($data['choices'][0]['message']['content']);
     }
 
-/**
- * Build prompt for the LLM based on user parameters.
- */
-private function build_prompt($params) {
-    $keyword = sanitize_text_field($params['keyword']);
-    $type = sanitize_text_field($params['type']);
-    $count = intval($params['count']);
-    $min_length = get_option('cg_min_curiosity_length', 100);
-    $language = !empty($params['language']) ? sanitize_text_field($params['language']) : 'italiano';
+    /**
+     * Build prompt for the LLM based on user parameters.
+     */
+    private function build_prompt($params) {
+        $keyword = sanitize_text_field($params['keyword']);
+        $type = sanitize_text_field($params['type']);
+        $count = intval($params['count']);
+        $min_length = get_option('cg_min_curiosity_length', 100);
+        $language = !empty($params['language']) ? sanitize_text_field($params['language']) : 'italiano';
 
-    // Genera contenuto nella lingua selezionata (default: italiano)
-    $prompt = "Genera {$count} curiosità uniche e interessanti in lingua {$language}. Ogni curiosità deve essere un paragrafo ben scritto, di almeno {$min_length} parole, adatto per un articolo di blog e per l'indicizzazione su Google News. Le curiosità devono essere fattualmente accurate per quanto possibile.\n\n";
-    $prompt .= "Tema principale/Parola chiave: \"{$keyword}\"\n";
-    $prompt .= "Tipologia di curiosità (obbligatoria): \"{$type}\"\n";
-    $prompt .= "Lingua (obbligatoria): \"{$language}\"\n\n";
+        // Genera contenuto nella lingua selezionata (default: italiano)
+        $prompt = "Genera {$count} curiosità uniche e interessanti in lingua {$language}. Ogni curiosità deve essere un paragrafo ben scritto, di almeno {$min_length} parole, adatto per un articolo di blog e per l'indicizzazione su Google News. Le curiosità devono essere fattualmente accurate per quanto possibile.\n\n";
+        $prompt .= "Tema principale/Parola chiave: \"{$keyword}\"\n";
+        $prompt .= "Tipologia di curiosità (obbligatoria): \"{$type}\"\n";
+        $prompt .= "Lingua (obbligatoria): \"{$language}\"\n\n";
 
-    // Add optional parameters if provided
-    if (!empty($params['period'])) {
-        $prompt .= "Periodo/Contesto Temporale: \"" . sanitize_text_field($params['period']) . "\"\n";
-    }
-
-    // Add other optional parameters
-    $optional_params = array('param1', 'param2', 'param3', 'param4', 'param5', 'param6', 'param7', 'param8');
-    foreach ($optional_params as $index => $param_key) {
-        if (!empty($params[$param_key])) {
-            $prompt .= "Parametro " . ($index + 1) . ": \"" . sanitize_text_field($params[$param_key]) . "\"\n";
+        // Add optional parameters if provided
+        if (!empty($params['period'])) {
+            $prompt .= "Periodo/Contesto Temporale: \"" . sanitize_text_field($params['period']) . "\"\n";
         }
+
+        // Add other optional parameters
+        $optional_params = array('param1', 'param2', 'param3', 'param4', 'param5', 'param6', 'param7', 'param8');
+        foreach ($optional_params as $index => $param_key) {
+            if (!empty($params[$param_key])) {
+                $prompt .= "Parametro " . ($index + 1) . ": \"" . sanitize_text_field($params[$param_key]) . "\"\n";
+            }
+        }
+
+        $prompt .= "\nPer ogni curiosità generata, fornisci anche una lista di 3-5 tag pertinenti in {$language} che descrivano il suo contenuto specifico, oltre ai parametri usati.\n\n";
+        $prompt .= "Formato di output desiderato per ogni curiosità:\n";
+        $prompt .= "Testo della curiosità: [Testo generato qui]\n";
+        $prompt .= "Tag suggeriti: [tag1, tag2, tag3, tag4, tag5]\n\n";
+
+        if ($count > 1) {
+            $prompt .= "Separa ogni curiosità con una linea di tre trattini (---).";
+        }
+
+        return $prompt;
     }
-
-    $prompt .= "\nPer ogni curiosità generata, fornisci anche una lista di 3-5 tag pertinenti in {$language} che descrivano il suo contenuto specifico, oltre ai parametri usati.\n\n";
-    $prompt .= "Formato di output desiderato per ogni curiosità:\n";
-    $prompt .= "Testo della curiosità: [Testo generato qui]\n";
-    $prompt .= "Tag suggeriti: [tag1, tag2, tag3, tag4, tag5]\n\n";
-
-    if ($count > 1) {
-        $prompt .= "Separa ogni curiosità con una linea di tre trattini (---).";
-    }
-
-    return $prompt;
-}
 
 
     /**
@@ -164,5 +164,76 @@ private function build_prompt($params) {
         }
 
         return $curiosities;
+    }
+
+    /**
+     * Genera un'immagine utilizzando OpenRouter API.
+     */
+    public function generate_image($prompt, $post_id) {
+        $api_key = $this->get_api_key();
+        $model = get_option('cg_image_llm_model', 'stability/stable-diffusion-xl-1024-v1-0');
+
+        if (empty($api_key)) {
+            return new WP_Error('missing_api_key', 'OpenRouter API key is missing');
+        }
+
+        // Prepara la richiesta API in base al modello
+        $endpoint = 'https://openrouter.ai/api/v1/images/generations';
+        
+        $request_body = array(
+            'model' => $model,
+            'prompt' => $prompt,
+            'n' => 1,
+            'size' => '1024x1024',
+            'response_format' => 'url'
+        );
+
+        $response = wp_remote_post($endpoint, array(
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $api_key,
+                'Content-Type' => 'application/json',
+                'HTTP-Referer' => home_url()
+            ),
+            'body' => json_encode($request_body),
+            'timeout' => 60
+        ));
+
+        if (is_wp_error($response)) {
+            return $response;
+        }
+
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+
+        if (empty($data) || !isset($data['data'][0]['url'])) {
+            return new WP_Error('api_error', 'Invalid response from OpenRouter API');
+        }
+
+        // Ottieni l'URL dell'immagine generata
+        $image_url = $data['data'][0]['url'];
+        
+        // Scarica l'immagine e impostala come featured image
+        return $this->set_image_as_featured($image_url, $post_id);
+    }
+
+    /**
+     * Scarica un'immagine da un URL e la imposta come featured image per un post.
+     */
+    private function set_image_as_featured($image_url, $post_id) {
+        require_once(ABSPATH . 'wp-admin/includes/media.php');
+        require_once(ABSPATH . 'wp-admin/includes/file.php');
+        require_once(ABSPATH . 'wp-admin/includes/image.php');
+        
+        // Scarica l'immagine
+        $image_id = media_sideload_image($image_url, $post_id, '', 'id');
+        
+        if (is_wp_error($image_id)) {
+            return $image_id;
+        }
+        
+        // Imposta l'immagine come featured image
+        set_post_thumbnail($post_id, $image_id);
+        
+        return $image_id;
     }
 }

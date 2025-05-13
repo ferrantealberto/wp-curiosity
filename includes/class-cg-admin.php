@@ -34,6 +34,7 @@ class CG_Admin {
     public function register_settings() {
         register_setting('cg_settings_group', 'cg_openrouter_api_key');
         register_setting('cg_settings_group', 'cg_llm_model');
+        register_setting('cg_settings_group', 'cg_image_llm_model');
         register_setting('cg_settings_group', 'cg_adsense_inline_code');
         register_setting('cg_settings_group', 'cg_adsense_fullscreen_code');
         register_setting('cg_settings_group', 'cg_adsense_header_code');
