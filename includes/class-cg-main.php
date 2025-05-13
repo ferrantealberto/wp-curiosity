@@ -62,6 +62,7 @@ class CG_Main {
         
         // Admin AJAX handlers
         add_action('wp_ajax_cg_refresh_models', array($admin, 'ajax_refresh_models'));
+        add_action('wp_ajax_cg_update_user_credits', array($admin, 'ajax_update_user_credits'));
     }
 
     /**
@@ -73,6 +74,11 @@ class CG_Main {
 
         // Frontend scripts and styles
         add_action('wp_enqueue_scripts', array($frontend, 'enqueue_public_scripts'));
+        
+        // Enqueue dashicons for social sharing buttons
+        add_action('wp_enqueue_scripts', function() {
+            wp_enqueue_style('dashicons');
+        });
 
         // AJAX handlers
         add_action('wp_ajax_generate_curiosity', array($frontend, 'handle_generate_curiosity'));
@@ -108,7 +114,8 @@ class CG_Main {
             'cg_adsense_footer_code' => '',
             'cg_fullscreen_ad_frequency' => 5,
             'cg_generation_credits' => 5,
-            'cg_view_credits' => 1
+            'cg_view_credits' => 1,
+            'cg_disable_demo_ads' => 0
         );
 
         // Only add options if they don't exist

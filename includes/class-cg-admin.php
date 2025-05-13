@@ -17,6 +17,15 @@ class CG_Admin {
             'dashicons-lightbulb',
             80
         );
+        
+        add_submenu_page(
+            'curiosity-generator-settings',
+            __('User Credits Management', 'curiosity-generator'),
+            __('User Credits', 'curiosity-generator'),
+            'manage_options',
+            'curiosity-generator-credits',
+            array($this, 'render_credits_page')
+        );
     }
     
     /**
@@ -29,6 +38,7 @@ class CG_Admin {
         register_setting('cg_settings_group', 'cg_adsense_fullscreen_code');
         register_setting('cg_settings_group', 'cg_adsense_header_code');
         register_setting('cg_settings_group', 'cg_adsense_footer_code');
+        register_setting('cg_settings_group', 'cg_disable_demo_ads');
         register_setting('cg_settings_group', 'cg_fullscreen_ad_frequency', array($this, 'sanitize_number'));
         register_setting('cg_settings_group', 'cg_generation_credits', array($this, 'sanitize_number'));
         register_setting('cg_settings_group', 'cg_view_credits', array($this, 'sanitize_number'));
@@ -70,6 +80,36 @@ class CG_Admin {
     }
     
     /**
+     * Ajax handler to update user credits
+     */
+    public function ajax_update_user_credits() {
+        // Check nonce for security
+        check_ajax_referer('cg_admin_nonce', 'nonce');
+        
+        // Check if user has permissions
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => __('You do not have permission to perform this action.', 'curiosity-generator')));
+        }
+        
+        // Get parameters
+        $user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
+        $generation_credits = isset($_POST['generation_credits']) ? intval($_POST['generation_credits']) : 0;
+        $view_credits = isset($_POST['view_credits']) ? intval($_POST['view_credits']) : 0;
+        
+        if (empty($user_id)) {
+            wp_send_json_error(array('message' => __('Invalid user ID.', 'curiosity-generator')));
+        }
+        
+        // Update credits
+        update_user_meta($user_id, 'cg_generation_credits', $generation_credits);
+        update_user_meta($user_id, 'cg_view_credits', $view_credits);
+        
+        wp_send_json_success(array(
+            'message' => __('User credits updated successfully.', 'curiosity-generator')
+        ));
+    }
+    
+    /**
      * Sanitize number input.
      */
     public function sanitize_number($input) {
@@ -80,7 +120,7 @@ class CG_Admin {
      * Enqueue admin scripts and styles.
      */
     public function enqueue_admin_scripts($hook) {
-        if ('toplevel_page_curiosity-generator-settings' === $hook) {
+        if ('toplevel_page_curiosity-generator-settings' === $hook || 'curiosity-generator_page_curiosity-generator-credits' === $hook) {
             wp_enqueue_style('cg-admin-styles', CG_PLUGIN_URL . 'admin/css/cg-admin-styles.css', array(), CG_VERSION);
             
             // Carica Select2 per i dropdown avanzati
@@ -108,5 +148,12 @@ class CG_Admin {
      */
     public function render_settings_page() {
         require_once CG_PLUGIN_DIR . 'admin/views/settings-page.php';
+    }
+    
+    /**
+     * Render credits management page.
+     */
+    public function render_credits_page() {
+        require_once CG_PLUGIN_DIR . 'admin/views/users-credits.php';
     }
 }

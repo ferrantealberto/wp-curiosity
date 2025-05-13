@@ -3,7 +3,7 @@
  * Plugin Name: Curiosity Generator
  * Plugin URI: https://example.com/curiosity-generator/
  * Description: Generates curiosities on-demand using LLMs via OpenRouter, integrates Adsense, and includes a user credit system.
- * Version: 1.0.0
+ * Version: 3.3.0
  * Author: Manus AI Agent
  * Author URI: https://example.com/
  * License: GPLv2 or later

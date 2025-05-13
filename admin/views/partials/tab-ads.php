@@ -4,6 +4,15 @@
 <table class="form-table">
     <tr>
         <th scope="row">
+            <label for="cg_disable_demo_ads">Disable Demo Ads</label>
+        </th>
+        <td>
+            <input type="checkbox" name="cg_disable_demo_ads" id="cg_disable_demo_ads" value="1" <?php checked(get_option('cg_disable_demo_ads', 0), 1); ?>>
+            <p class="description">When enabled, demo ads will not be shown even if AdSense code is not provided.</p>
+        </td>
+    </tr>
+    <tr>
+        <th scope="row">
             <label for="cg_adsense_header_code">Header Ad Code</label>
         </th>
         <td>

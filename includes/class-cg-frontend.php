@@ -41,6 +41,11 @@ class CG_Frontend {
      * @return string Il codice HTML dell'annuncio demo
      */
     private function get_demo_adsense_code($type = 'inline') {
+        // Check if demo ads are disabled
+        if (get_option('cg_disable_demo_ads', 0)) {
+            return '';
+        }
+        
         $backgroundColor = '#f0f0f0';
         $borderColor = '#ccc';
         $height = '250px';
@@ -161,7 +166,8 @@ class CG_Frontend {
             'post_titles' => $post_titles,
             'post_contents' => $post_contents,
             'message' => __('Curiosità generate con successo!', 'curiosity-generator'),
-            'credits' => $user_id ? $credits->get_user_credits($user_id) : 0,
+            'generation_credits' => $user_id ? $credits->get_user_generation_credits($user_id) : 0,
+            'view_credits' => $user_id ? $credits->get_user_view_credits($user_id) : 0,
             'inline_ad' => !empty($inline_ad_code) ? $inline_ad_code : $this->get_demo_adsense_code('inline'),
             'header_ad' => !empty($header_ad_code) ? $header_ad_code : $this->get_demo_adsense_code('header'),
             'footer_ad' => !empty($footer_ad_code) ? $footer_ad_code : $this->get_demo_adsense_code('footer'),

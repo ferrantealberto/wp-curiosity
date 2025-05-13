@@ -13,10 +13,10 @@ class CG_Credits {
         }
         
         $credit_value = get_option('cg_generation_credits', 5);
-        $current_credits = $this->get_user_credits($user_id);
+        $current_credits = $this->get_user_generation_credits($user_id);
         $new_credits = $current_credits + $credit_value;
         
-        return update_user_meta($user_id, 'cg_user_credits', $new_credits);
+        return update_user_meta($user_id, 'cg_generation_credits', $new_credits);
     }
     
     /**
@@ -63,25 +63,43 @@ class CG_Credits {
         
         // Add credits to author
         $credit_value = get_option('cg_view_credits', 1);
-        $current_credits = $this->get_user_credits($author_id);
+        $current_credits = $this->get_user_view_credits($author_id);
         $new_credits = $current_credits + $credit_value;
         
-        return update_user_meta($author_id, 'cg_user_credits', $new_credits);
+        return update_user_meta($author_id, 'cg_view_credits', $new_credits);
     }
     
     /**
-     * Get user's current credits.
+     * Get user's current generation credits.
      */
-    public function get_user_credits($user_id) {
+    public function get_user_generation_credits($user_id) {
         if (!$user_id) {
             return 0;
         }
         
-        $credits = get_user_meta($user_id, 'cg_user_credits', true);
+        $credits = get_user_meta($user_id, 'cg_generation_credits', true);
         return $credits ? intval($credits) : 0;
     }
     
-			
+    /**
+     * Get user's current view credits.
+     */
+    public function get_user_view_credits($user_id) {
+        if (!$user_id) {
+            return 0;
+        }
+        
+        $credits = get_user_meta($user_id, 'cg_view_credits', true);
+        return $credits ? intval($credits) : 0;
+    }
+    
+    /**
+     * Get user's total credits (generation + view)
+     */
+    public function get_user_credits($user_id) {
+        return $this->get_user_generation_credits($user_id) + $this->get_user_view_credits($user_id);
+    }
+    
     /**
      * Track post view to add credits to the author.
      */

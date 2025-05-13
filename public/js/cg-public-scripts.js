@@ -78,9 +78,7 @@
                     displayResults(response.data);
                     
                     // Update user credits if available
-                    if (response.data.credits) {
-                        $('.cg-credit-count').text(response.data.credits);
-                    }
+                    updateCredits(response.data);
                     
                     // Show fullscreen ad after generation
                     displayFullscreenAd();
@@ -97,6 +95,17 @@
             });
         }
         
+        // Update user credits
+        function updateCredits(data) {
+            if (data.generation_credits !== undefined) {
+                $('.cg-generation-credit-count').text(data.generation_credits);
+            }
+            
+            if (data.view_credits !== undefined) {
+                $('.cg-view-credit-count').text(data.view_credits);
+            }
+        }
+        
         // Display the generated curiosities
         function displayResults(data) {
             var $list = $('#cg-curiosities-list');
@@ -111,7 +120,45 @@
                     .attr('href', data.post_urls[i])
                     .text('Visualizza Post Completo');
                 
-                $item.append($title, $content, $link);
+                // Create social sharing buttons
+                var $socialShare = $('<div class="cg-social-share"></div>');
+                
+                // Facebook
+                var facebookUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(data.post_urls[i]);
+                var $facebookBtn = $('<a class="cg-social-button facebook" target="_blank"></a>')
+                    .attr('href', facebookUrl)
+                    .html('<i class="dashicons dashicons-facebook"></i> Facebook');
+                
+                // Twitter
+                var tweetText = encodeURIComponent(data.post_titles[i]);
+                var twitterUrl = 'https://twitter.com/intent/tweet?text=' + tweetText + '&url=' + encodeURIComponent(data.post_urls[i]);
+                var $twitterBtn = $('<a class="cg-social-button twitter" target="_blank"></a>')
+                    .attr('href', twitterUrl)
+                    .html('<i class="dashicons dashicons-twitter"></i> Twitter');
+                
+                // LinkedIn
+                var linkedinUrl = 'https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(data.post_urls[i]);
+                var $linkedinBtn = $('<a class="cg-social-button linkedin" target="_blank"></a>')
+                    .attr('href', linkedinUrl)
+                    .html('<i class="dashicons dashicons-linkedin"></i> LinkedIn');
+                
+                // Pinterest
+                var pinterestUrl = 'https://pinterest.com/pin/create/button/?url=' + encodeURIComponent(data.post_urls[i]) + '&description=' + encodeURIComponent(data.post_titles[i]);
+                var $pinterestBtn = $('<a class="cg-social-button pinterest" target="_blank"></a>')
+                    .attr('href', pinterestUrl)
+                    .html('<i class="dashicons dashicons-pinterest"></i> Pinterest');
+                
+                // WhatsApp
+                var whatsappText = encodeURIComponent(data.post_titles[i] + ' - ' + data.post_urls[i]);
+                var whatsappUrl = 'https://wa.me/?text=' + whatsappText;
+                var $whatsappBtn = $('<a class="cg-social-button whatsapp" target="_blank"></a>')
+                    .attr('href', whatsappUrl)
+                    .html('<i class="dashicons dashicons-whatsapp"></i> WhatsApp');
+                
+                // Add all buttons to social share container
+                $socialShare.append($facebookBtn, $twitterBtn, $linkedinBtn, $pinterestBtn, $whatsappBtn);
+                
+                $item.append($title, $content, $link, $socialShare);
                 $list.append($item);
             }
             
@@ -120,7 +167,7 @@
         
         // Display fullscreen ad
         function displayFullscreenAd(callback) {
-            var adCode = cg_ajax_object.adsense_fullscreen_code || cg_ajax_object.adsense_demo_code;
+            var adCode = cg_ajax_object.adsense_fullscreen_code || cg_ajax_object.adsense_demo_fullscreen_code;
             if (adCode) {
                 $('#cg-fullscreen-ad-content').html(adCode);
                 $('#cg-fullscreen-ad-container').fadeIn();
