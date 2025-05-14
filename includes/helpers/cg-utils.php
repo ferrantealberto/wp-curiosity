@@ -137,6 +137,54 @@ function cg_model_can_generate_images($model_id) {
 }
 
 /**
+ * Verifica se un modello è considerato gratuito/economico o premium.
+ * @param string $model_id ID del modello da verificare
+ * @return bool True se il modello è considerato gratuito/economico, false se è premium
+ */
+function cg_model_is_free_tier($model_id) {
+    $free_tier_models = array(
+        'openai/gpt-3.5-turbo',
+        'google/gemini-pro',
+        'meta-llama/llama-3-70b-instruct',
+        'stability/stable-diffusion-xl-1024-v1-0'
+    );
+    
+    return in_array($model_id, $free_tier_models);
+}
+
+/**
+ * Ottiene informazioni dettagliate sui modelli più importanti per la legenda
+ * @return array Dati per la legenda dei modelli
+ */
+function cg_get_models_legend_data() {
+    return array(
+        'text' => array(
+            'free' => array(
+                'openai/gpt-3.5-turbo' => 'GPT-3.5 Turbo - Veloce ed economico',
+                'google/gemini-pro' => 'Gemini Pro - Buon equilibrio prezzo/prestazioni',
+                'meta-llama/llama-3-70b-instruct' => 'Llama 3 70B - Alternativa open source potente'
+            ),
+            'premium' => array(
+                'anthropic/claude-3-opus' => 'Claude 3 Opus - Massima qualità e comprensione',
+                'openai/gpt-4' => 'GPT-4 - Eccellente per compiti complessi',
+                'anthropic/claude-3-sonnet' => 'Claude 3 Sonnet - Bilanciato tra costo e qualità'
+            )
+        ),
+        'image' => array(
+            'free' => array(
+                'stability/stable-diffusion-xl-1024-v1-0' => 'Stable Diffusion XL - Generazione di immagini gratuita/economica'
+            ),
+            'premium' => array(
+                'openai/dall-e-3' => 'DALL-E 3 - Alta qualità e precisione',
+                'midjourney/mj' => 'Midjourney - Artistico e dettagliato',
+                'google/imagen-2' => 'Google Imagen 2 - Ottima comprensione del testo',
+                'stability/stable-diffusion-3-large' => 'Stable Diffusion 3 Large - Ottimo per dettagli'
+            )
+        )
+    );
+}
+
+/**
  * Get default curiosity types.
  */
 function cg_get_default_types() {

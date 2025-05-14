@@ -45,6 +45,20 @@
             return $('<span>' + option.text + '</span>');
         }
         
+        // Gestione del toggle della legenda
+        $('#cg-toggle-legend').on('click', function() {
+            var $content = $('#cg-models-legend-content');
+            var $button = $(this);
+            
+            if ($content.is(':visible')) {
+                $content.slideUp();
+                $button.text('Mostra');
+            } else {
+                $content.slideDown();
+                $button.text('Nascondi');
+            }
+        });
+        
         // Pulsante per aggiornare i modelli
         $('#cg-refresh-models').on('click', function() {
             var $button = $(this);

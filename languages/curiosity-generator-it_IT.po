@@ -430,3 +430,27 @@ msgstr "Arabo"
 
 msgid "Hindi"
 msgstr "Hindi"
+
+msgid "Legenda Modelli"
+msgstr "Legenda Modelli"
+
+msgid "Nascondi"
+msgstr "Nascondi"
+
+msgid "Mostra"
+msgstr "Mostra"
+
+msgid "Modelli per Generazione di Testo:"
+msgstr "Modelli per Generazione di Testo:"
+
+msgid "Piano Gratuito / Economico:"
+msgstr "Piano Gratuito / Economico:"
+
+msgid "Piano Premium:"
+msgstr "Piano Premium:"
+
+msgid "Modelli per Generazione di Immagini:"
+msgstr "Modelli per Generazione di Immagini:"
+
+msgid "Nota: Per generare immagini, devi selezionare un modello contrassegnato con \"Supporta immagini\" o uno dei modelli elencati nella sezione \"Modelli per Generazione di Immagini\" di questa legenda."
+msgstr "Nota: Per generare immagini, devi selezionare un modello contrassegnato con \"Supporta immagini\" o uno dei modelli elencati nella sezione \"Modelli per Generazione di Immagini\" di questa legenda."
