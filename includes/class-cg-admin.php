@@ -121,19 +121,15 @@ class CG_Admin {
      */
     public function enqueue_admin_scripts($hook) {
         if ('toplevel_page_curiosity-generator-settings' === $hook || 'curiosity-generator_page_curiosity-generator-credits' === $hook) {
-            // Carica prima jQuery UI
-            wp_enqueue_script('jquery-ui-core');
-            wp_enqueue_script('jquery-ui-tabs');
+            wp_enqueue_style('cg-admin-styles', CG_PLUGIN_URL . 'admin/css/cg-admin-styles.css', array(), CG_VERSION);
             
-            // Carica Select2
+            // Carica Select2 per i dropdown avanzati
             wp_enqueue_style('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css');
             wp_enqueue_script('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js', array('jquery'), '4.0.13', true);
             
-            // Carica gli stili e gli script admin
-            wp_enqueue_style('cg-admin-styles', CG_PLUGIN_URL . 'admin/css/cg-admin-styles.css', array(), CG_VERSION);
-            wp_enqueue_script('cg-admin-scripts', CG_PLUGIN_URL . 'admin/js/cg-admin-scripts.js', array('jquery', 'select2', 'jquery-ui-tabs'), CG_VERSION, true);
+            wp_enqueue_script('cg-admin-scripts', CG_PLUGIN_URL . 'admin/js/cg-admin-scripts.js', array('jquery', 'select2'), CG_VERSION, true);
             
-            // Localizzazione
+            // Localizza lo script per l'AJAX
             wp_localize_script('cg-admin-scripts', 'cg_admin_object', array(
                 'nonce' => wp_create_nonce('cg_admin_nonce'),
                 'ajaxurl' => admin_url('admin-ajax.php'),

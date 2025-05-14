@@ -87,18 +87,6 @@ option.cg-model-supports-images {
     font-weight: bold;
 }
 
-/* Evidenzia modelli gratuiti */
-.select2-results__option.cg-model-free,
-option.cg-model-free {
-    color: #4CAF50;
-}
-
-/* Evidenzia modelli di alta qualità */
-.select2-results__option.cg-model-high-quality,
-option.cg-model-high-quality {
-    color: #FF9800;
-}
-
 /* Stili per il contenitore di ricerca */
 .select2-search--dropdown {
     padding: 8px;
@@ -106,33 +94,6 @@ option.cg-model-high-quality {
 
 .select2-search__field {
     width: 100% !important;
-}
-
-/* Stili per i filtri dei modelli */
-.cg-model-filters {
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.cg-filter-label {
-    font-weight: bold;
-    margin-right: 5px;
-}
-
-.cg-filter-button {
-    padding: 4px 12px;
-    font-size: 13px;
-    cursor: pointer;
-}
-
-.cg-filter-button.active {
-    background-color: #0073aa;
-    color: #fff;
-    border-color: #005a87;
-    box-shadow: 0 1px 0 #005a87;
 }
 
 /* Animazione per il pulsante di aggiornamento */
@@ -176,7 +137,6 @@ option.cg-model-high-quality {
     padding: 20px;
     border: 1px solid #ccc;
     border-top: none;
-    display: block;
 }
 
 /* Settings form styling */
@@ -220,12 +180,7 @@ option.cg-model-high-quality {
 
 /* API key field - make it longer */
 #cg_openrouter_api_key {
-    width: 100%;
-    max-width: 400px;
-    height: 30px;
-    padding: 5px 10px;
-    border: 1px solid #7e8993;
-    border-radius: 3px;
+    width: 400px;
 }
 
 /* Textarea fields */

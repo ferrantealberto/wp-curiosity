@@ -113,9 +113,6 @@ class CG_OpenRouter {
             $prompt .= "Separa ogni curiosità con una linea di tre trattini (---).";
         }
 
-        // Specifica istruzioni aggiuntive per evitare codici ASCII e caratteri speciali problematici
-        $prompt .= "\n\nIMPORTANTE: Usa virgolette normali (\") e non tipografiche. Non usare caratteri speciali o entità HTML. Usa semplice testo UTF-8 standard.";
-
         return $prompt;
     }
 
@@ -140,37 +137,8 @@ class CG_OpenRouter {
 
             // Ottieni il testo e decodifica subito le entità HTML
             $text = isset($text_matches[1]) ? trim($text_matches[1]) : '';
-            
-            // Decodifica le entità HTML in caratteri normali - prima passata
+            // Decodifica le entità HTML in caratteri normali
             $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            
-            // Sostituisci manualmente i codici ASCII problematici che potrebbero non essere decodificati
-            $problematic_codes = array(
-                '&#8220;' => '"', // virgolette aperte
-                '&#8221;' => '"', // virgolette chiuse
-                '&#8217;' => "'", // apostrofo
-                '&#8216;' => "'", // apice singolo aperto
-                '&#8211;' => '-', // trattino medio
-                '&#8212;' => '--', // trattino lungo
-                '&amp;' => '&',    // e commerciale
-                '&lt;' => '<',     // minore
-                '&gt;' => '>',     // maggiore
-                '&quot;' => '"',   // virgolette
-                '&nbsp;' => ' ',   // spazio non divisibile
-                '&lsquo;' => "'",  // virgoletta singola aperta
-                '&rsquo;' => "'",  // virgoletta singola chiusa
-                '&ldquo;' => '"',  // virgoletta doppia aperta
-                '&rdquo;' => '"',  // virgoletta doppia chiusa
-                '&ndash;' => '-',  // trattino 
-                '&mdash;' => '--', // trattino lungo
-                '&hellip;' => '...', // puntini di sospensione
-            );
-            
-            $text = str_replace(array_keys($problematic_codes), array_values($problematic_codes), $text);
-            
-            // Decodifica una seconda volta per catturare eventuali entità annidate
-            $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            
             // Rimuovi ogni possibile carattere di controllo e normalizza gli spazi
             $text = preg_replace('/[\x00-\x1F\x7F]/u', '', $text);
             $text = preg_replace('/\s+/', ' ', $text);
@@ -183,15 +151,7 @@ class CG_OpenRouter {
                 $tags_string = str_replace(array('[', ']'), '', $tags_string);
                 $tags_array = explode(',', $tags_string);
                 foreach ($tags_array as $tag) {
-                    $clean_tag = trim($tag);
-                    // Applica la stessa pulizia anche ai tag
-                    $clean_tag = html_entity_decode($clean_tag, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                    $clean_tag = str_replace(array_keys($problematic_codes), array_values($problematic_codes), $clean_tag);
-                    $clean_tag = html_entity_decode($clean_tag, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                    
-                    if (!empty($clean_tag)) {
-                        $tags[] = $clean_tag;
-                    }
+                    $tags[] = trim($tag);
                 }
             }
 

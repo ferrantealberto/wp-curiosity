@@ -13,16 +13,13 @@ class CG_Post_Manager {
             $user_id = get_option('cg_default_author', 1);
         }
         
-        // Clean and sanitize the text to prevent ASCII codes issues
-        $sanitized_text = $this->sanitize_post_content($curiosity['text']);
-        
         // Create post title from the first few words of the curiosity
-        $text = wp_strip_all_tags($sanitized_text);
+        $text = html_entity_decode(wp_strip_all_tags($curiosity['text']), ENT_QUOTES, 'UTF-8');
         $words = explode(' ', $text);
         $title_words = array_slice($words, 0, 8);
         $title = implode(' ', $title_words);
         if (count($words) > 8) {
-            $title .= '...'; // Usa puntini di sospensione standard
+            $title .= '…'; // Usa il carattere Unicode per l'ellipsis
         }
         
         // Get the default "Curiosità" category ID
@@ -40,7 +37,7 @@ class CG_Post_Manager {
         // Prepare post data
         $post_data = array(
             'post_title'    => $title,
-            'post_content'  => $sanitized_text,
+            'post_content'  => $curiosity['text'],
             'post_status'   => 'publish',
             'post_author'   => $user_id,
             'post_category' => $category_ids,
@@ -54,14 +51,8 @@ class CG_Post_Manager {
             return $post_id;
         }
         
-        // Sanitize tags
-        $sanitized_tags = array();
-        foreach ($curiosity['tags'] as $tag) {
-            $sanitized_tags[] = $this->sanitize_tag($tag);
-        }
-        
         // Add tags from parameters and suggested tags
-        $this->add_post_tags($post_id, $sanitized_tags, $params);
+        $this->add_post_tags($post_id, $curiosity['tags'], $params);
         
         // Add meta data for tracking
         add_post_meta($post_id, 'cg_generated', true);
@@ -71,55 +62,6 @@ class CG_Post_Manager {
         add_post_meta($post_id, 'cg_view_count', 0);
         
         return $post_id;
-    }
-    
-    /**
-     * Sanitizza il contenuto del post per evitare problemi con i codici ASCII
-     */
-    private function sanitize_post_content($text) {
-        // Prima decodifica tutte le entità HTML
-        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        
-        // Sostituisci manualmente i codici problematici
-        $problematic_codes = array(
-            '&#8220;' => '"', // virgolette aperte
-            '&#8221;' => '"', // virgolette chiuse
-            '&#8217;' => "'", // apostrofo
-            '&#8216;' => "'", // apice singolo aperto
-            '&#8211;' => '-', // trattino medio
-            '&#8212;' => '--', // trattino lungo
-            '&amp;' => '&',    // e commerciale
-            '&lt;' => '<',     // minore
-            '&gt;' => '>',     // maggiore
-            '&quot;' => '"',   // virgolette
-            '&nbsp;' => ' ',   // spazio non divisibile
-            '&lsquo;' => "'",  // virgoletta singola aperta
-            '&rsquo;' => "'",  // virgoletta singola chiusa
-            '&ldquo;' => '"',  // virgoletta doppia aperta
-            '&rdquo;' => '"',  // virgoletta doppia chiusa
-            '&ndash;' => '-',  // trattino 
-            '&mdash;' => '--', // trattino lungo
-            '&hellip;' => '...', // puntini di sospensione
-        );
-        
-        $text = str_replace(array_keys($problematic_codes), array_values($problematic_codes), $text);
-        
-        // Decodifica una seconda volta per catturare eventuali entità annidate
-        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        
-        // Rimuovi caratteri di controllo e normalizza spazi
-        $text = preg_replace('/[\x00-\x1F\x7F]/u', '', $text);
-        $text = preg_replace('/\s+/', ' ', $text);
-        
-        return $text;
-    }
-    
-    /**
-     * Sanitizza un tag per evitare problemi di codifica
-     */
-    private function sanitize_tag($tag) {
-        // Applica la stessa sanitizzazione usata per il contenuto
-        return $this->sanitize_post_content($tag);
     }
     
     /**
@@ -220,13 +162,7 @@ class CG_Post_Manager {
         // Remove duplicates and empty values
         $tags = array_unique(array_filter($tags));
         
-        // Sanitize all tags
-        $sanitized_tags = array();
-        foreach ($tags as $tag) {
-            $sanitized_tags[] = $this->sanitize_tag($tag);
-        }
-        
         // Set tags for the post
-        wp_set_post_tags($post_id, $sanitized_tags);
+        wp_set_post_tags($post_id, $tags);
     }
 }
