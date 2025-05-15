@@ -29,6 +29,10 @@ foreach ($options as $option) {
     delete_option($option);
 }
 
+// Drop scheduler table
+global $wpdb;
+$wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}cg_schedules");
+
 // We don't remove the Curiosità category or posts by default
 // to avoid accidental data loss. Uncomment the following code
 // if you want to remove them.
@@ -55,6 +59,5 @@ if ($category) {
 */
 
 // Remove user meta for credits
-global $wpdb;
 $wpdb->delete($wpdb->usermeta, array('meta_key' => 'cg_generation_credits'));
 $wpdb->delete($wpdb->usermeta, array('meta_key' => 'cg_view_credits'));

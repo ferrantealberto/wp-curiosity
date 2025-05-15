@@ -26,6 +26,7 @@ class CG_Main {
         require_once CG_PLUGIN_DIR . 'includes/class-cg-post-manager.php';
         require_once CG_PLUGIN_DIR . 'includes/class-cg-credits.php';
         require_once CG_PLUGIN_DIR . 'includes/class-cg-shortcodes.php';
+        require_once CG_PLUGIN_DIR . 'includes/class-cg-scheduler.php';
         require_once CG_PLUGIN_DIR . 'includes/helpers/cg-utils.php';
     }
 
@@ -71,6 +72,7 @@ class CG_Main {
     private function define_public_hooks() {
         $frontend = new CG_Frontend();
         $credits = new CG_Credits();
+        $scheduler = new CG_Scheduler();
 
         // Frontend scripts and styles
         add_action('wp_enqueue_scripts', array($frontend, 'enqueue_public_scripts'));
@@ -134,6 +136,9 @@ class CG_Main {
                 'slug' => 'curiosita'
             ));
         }
+        
+        // Create scheduler database table
+        CG_Scheduler::create_table();
 
         // Flush rewrite rules
         flush_rewrite_rules();

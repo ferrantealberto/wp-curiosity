@@ -26,6 +26,15 @@ class CG_Admin {
             'curiosity-generator-credits',
             array($this, 'render_credits_page')
         );
+        
+        add_submenu_page(
+            'curiosity-generator-settings',
+            __('Programmazione Curiosità', 'curiosity-generator'),
+            __('Programmazione', 'curiosity-generator'),
+            'manage_options',
+            'curiosity-generator-scheduler',
+            array($this, 'render_scheduler_page')
+        );
     }
     
     /**
@@ -120,7 +129,10 @@ class CG_Admin {
      * Enqueue admin scripts and styles.
      */
     public function enqueue_admin_scripts($hook) {
-        if ('toplevel_page_curiosity-generator-settings' === $hook || 'curiosity-generator_page_curiosity-generator-credits' === $hook) {
+        if ('toplevel_page_curiosity-generator-settings' === $hook || 
+            'curiosity-generator_page_curiosity-generator-credits' === $hook ||
+            'curiosity-generator_page_curiosity-generator-scheduler' === $hook) {
+            
             wp_enqueue_style('cg-admin-styles', CG_PLUGIN_URL . 'admin/css/cg-admin-styles.css', array(), CG_VERSION);
             
             // Carica Select2 per i dropdown avanzati
@@ -140,6 +152,22 @@ class CG_Admin {
                 'error_text' => __('Si è verificato un errore durante l\'aggiornamento dei modelli. Riprova.', 'curiosity-generator'),
                 'select_model_text' => __('Seleziona un modello', 'curiosity-generator')
             ));
+            
+            // Carica gli stili e gli script per la pagina di programmazione solo se necessario
+            if ('curiosity-generator_page_curiosity-generator-scheduler' === $hook) {
+                wp_enqueue_style('cg-scheduler-styles', CG_PLUGIN_URL . 'admin/css/cg-scheduler-styles.css', array(), CG_VERSION);
+                wp_enqueue_script('cg-scheduler-scripts', CG_PLUGIN_URL . 'admin/js/cg-scheduler-scripts.js', array('jquery'), CG_VERSION, true);
+                
+                wp_localize_script('cg-scheduler-scripts', 'cg_scheduler_object', array(
+                    'confirm_delete_text' => __('Sei sicuro di voler eliminare questa programmazione?', 'curiosity-generator'),
+                    'random_option_text' => __('Lascia vuoto per utilizzare un valore casuale.', 'curiosity-generator'),
+                    'type_description_text' => __('Seleziona un tipo o lascia vuoto per casuale', 'curiosity-generator'),
+                    'language_description_text' => __('Seleziona una lingua o lascia vuoto per casuale', 'curiosity-generator'),
+                    'tone_description_text' => __('Seleziona un tono o lascia vuoto per casuale', 'curiosity-generator'),
+                    'source_description_text' => __('Seleziona un tipo di fonte o lascia vuoto per casuale', 'curiosity-generator'),
+                    'audience_description_text' => __('Seleziona un pubblico o lascia vuoto per casuale', 'curiosity-generator')
+                ));
+            }
         }
     }
     
@@ -155,5 +183,12 @@ class CG_Admin {
      */
     public function render_credits_page() {
         require_once CG_PLUGIN_DIR . 'admin/views/users-credits.php';
+    }
+    
+    /**
+     * Render scheduler page.
+     */
+    public function render_scheduler_page() {
+        require_once CG_PLUGIN_DIR . 'admin/views/scheduler-page.php';
     }
 }
