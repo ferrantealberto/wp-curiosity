@@ -1,4 +1,4 @@
-<?php
+ <?php
 /**
  * Scheduler class for handling scheduled curiosity generation.
  */
@@ -20,34 +20,35 @@ class CG_Scheduler {
         
         $params['active'] = isset($params['active']) ? 1 : 0;
         
-        // Check if random option is enabled for multiple-choice fields
-        if (isset($params['use_random']) && $params['use_random']) {
-            if (empty($params['type'])) {
-                $types = array_keys(cg_get_default_types());
-                $params['type'] = $types[array_rand($types)];
-            }
-            
-            if (empty($params['param4'])) {
-                $tones = array('Humorous', 'Serious', 'Surprising', 'Little-known');
-                $params['param4'] = $tones[array_rand($tones)];
-            }
-            
-            if (empty($params['param5'])) {
-                $sources = array('Scientific studies', 'Historical records', 'Popular legends', 'Recent discoveries');
-                $params['param5'] = $sources[array_rand($sources)];
-            }
-            
-            if (empty($params['param6'])) {
-                $audiences = array('General public', 'Children', 'Subject experts', 'Enthusiasts');
-                $params['param6'] = $audiences[array_rand($audiences)];
-            }
-            
-            if (empty($params['language'])) {
-                $languages = array_keys(cg_get_available_languages());
-                $params['language'] = $languages[array_rand($languages)];
-            }
+        // Valori predefiniti per i campi che devono avere un valore
+        if (!isset($params['title']) || $params['title'] === '') {
+            $params['title'] = 'Programmazione Automatica';
         }
         
+        if (!isset($params['keyword']) || $params['keyword'] === '') {
+            return false; // La parola chiave è sempre obbligatoria
+        }
+        
+        // Verifica se l'opzione casuale è attiva e prepara i campi a scelta multipla
+        $use_random = isset($params['use_random']) && $params['use_random'];
+        
+        // Gestisci i campi a scelta multipla che potrebbero essere vuoti
+        $params['type'] = $this->prepare_field_value($params['type'], 'type', $use_random);
+        $params['language'] = $this->prepare_field_value($params['language'], 'language', $use_random);
+        $params['param4'] = $this->prepare_field_value($params['param4'], 'param4', $use_random);
+        $params['param5'] = $this->prepare_field_value($params['param5'], 'param5', $use_random);
+        $params['param6'] = $this->prepare_field_value($params['param6'], 'param6', $use_random);
+        
+        // Assicurati che i parametri opzionali siano vuoti se non impostati
+        $params['period'] = isset($params['period']) ? $params['period'] : '';
+        $params['param1'] = isset($params['param1']) ? $params['param1'] : '';
+        $params['param2'] = isset($params['param2']) ? $params['param2'] : '';
+        $params['param3'] = isset($params['param3']) ? $params['param3'] : '';
+        $params['param7'] = isset($params['param7']) ? $params['param7'] : '';
+        $params['param8'] = isset($params['param8']) ? $params['param8'] : '';
+        $params['count'] = isset($params['count']) && intval($params['count']) > 0 ? intval($params['count']) : 1;
+        
+        // Esegui l'inserimento nel database
         $result = $wpdb->insert(
             $table_name,
             array(
@@ -64,8 +65,8 @@ class CG_Scheduler {
                 'param6' => $params['param6'],
                 'param7' => $params['param7'],
                 'param8' => $params['param8'],
-                'count' => intval($params['count']),
-                'use_random' => isset($params['use_random']) ? 1 : 0,
+                'count' => $params['count'],
+                'use_random' => $use_random ? 1 : 0,
                 'scheduled_time' => $params['scheduled_time'],
                 'active' => $params['active'],
                 'created_at' => current_time('mysql'),
@@ -76,7 +77,7 @@ class CG_Scheduler {
         if ($result) {
             $schedule_id = $wpdb->insert_id;
             
-            // Schedule the cron job if active
+            // Pianifica il cron job se attivo
             if ($params['active']) {
                 $this->schedule_cron($schedule_id, strtotime($params['scheduled_time']));
             }
@@ -103,33 +104,33 @@ class CG_Scheduler {
         
         $params['active'] = isset($params['active']) ? 1 : 0;
         
-        // Check if random option is enabled for multiple-choice fields
-        if (isset($params['use_random']) && $params['use_random']) {
-            if (empty($params['type'])) {
-                $types = array_keys(cg_get_default_types());
-                $params['type'] = $types[array_rand($types)];
-            }
-            
-            if (empty($params['param4'])) {
-                $tones = array('Humorous', 'Serious', 'Surprising', 'Little-known');
-                $params['param4'] = $tones[array_rand($tones)];
-            }
-            
-            if (empty($params['param5'])) {
-                $sources = array('Scientific studies', 'Historical records', 'Popular legends', 'Recent discoveries');
-                $params['param5'] = $sources[array_rand($sources)];
-            }
-            
-            if (empty($params['param6'])) {
-                $audiences = array('General public', 'Children', 'Subject experts', 'Enthusiasts');
-                $params['param6'] = $audiences[array_rand($audiences)];
-            }
-            
-            if (empty($params['language'])) {
-                $languages = array_keys(cg_get_available_languages());
-                $params['language'] = $languages[array_rand($languages)];
-            }
+        // Valori predefiniti per i campi che devono avere un valore
+        if (!isset($params['title']) || $params['title'] === '') {
+            $params['title'] = 'Programmazione Automatica';
         }
+        
+        if (!isset($params['keyword']) || $params['keyword'] === '') {
+            return false; // La parola chiave è sempre obbligatoria
+        }
+        
+        // Verifica se l'opzione casuale è attiva e prepara i campi a scelta multipla
+        $use_random = isset($params['use_random']) && $params['use_random'];
+        
+        // Gestisci i campi a scelta multipla che potrebbero essere vuoti
+        $params['type'] = $this->prepare_field_value($params['type'], 'type', $use_random);
+        $params['language'] = $this->prepare_field_value($params['language'], 'language', $use_random);
+        $params['param4'] = $this->prepare_field_value($params['param4'], 'param4', $use_random);
+        $params['param5'] = $this->prepare_field_value($params['param5'], 'param5', $use_random);
+        $params['param6'] = $this->prepare_field_value($params['param6'], 'param6', $use_random);
+        
+        // Assicurati che i parametri opzionali siano vuoti se non impostati
+        $params['period'] = isset($params['period']) ? $params['period'] : '';
+        $params['param1'] = isset($params['param1']) ? $params['param1'] : '';
+        $params['param2'] = isset($params['param2']) ? $params['param2'] : '';
+        $params['param3'] = isset($params['param3']) ? $params['param3'] : '';
+        $params['param7'] = isset($params['param7']) ? $params['param7'] : '';
+        $params['param8'] = isset($params['param8']) ? $params['param8'] : '';
+        $params['count'] = isset($params['count']) && intval($params['count']) > 0 ? intval($params['count']) : 1;
         
         $result = $wpdb->update(
             $table_name,
@@ -147,8 +148,8 @@ class CG_Scheduler {
                 'param6' => $params['param6'],
                 'param7' => $params['param7'],
                 'param8' => $params['param8'],
-                'count' => intval($params['count']),
-                'use_random' => isset($params['use_random']) ? 1 : 0,
+                'count' => $params['count'],
+                'use_random' => $use_random ? 1 : 0,
                 'scheduled_time' => $params['scheduled_time'],
                 'active' => $params['active'],
                 'updated_at' => current_time('mysql')
@@ -157,10 +158,10 @@ class CG_Scheduler {
         );
         
         if ($result !== false) {
-            // Unschedule old cron job
+            // Disattiva il vecchio cron job
             $this->unschedule_cron($schedule_id);
             
-            // Schedule new cron job if active
+            // Pianifica un nuovo cron job se attivo
             if ($params['active']) {
                 $this->schedule_cron($schedule_id, strtotime($params['scheduled_time']));
             }
@@ -169,6 +170,78 @@ class CG_Scheduler {
         }
         
         return false;
+    }
+    
+    /**
+     * Prepare a field value, selecting a random value if needed.
+     */
+    private function prepare_field_value($value, $field_type, $use_random) {
+        // Se il valore è vuoto o non definito e l'opzione casuale è attiva
+        if (($value === '' || $value === null) && $use_random) {
+            switch ($field_type) {
+                case 'type':
+                    return $this->get_random_type();
+                case 'language':
+                    return $this->get_random_language();
+                case 'param4': // Tono
+                    return $this->get_random_tone();
+                case 'param5': // Tipo di fonte
+                    return $this->get_random_source();
+                case 'param6': // Pubblico di riferimento
+                    return $this->get_random_audience();
+                default:
+                    return '';
+            }
+        }
+        
+        // Altrimenti, ritorna il valore originale
+        return $value;
+    }
+    
+    /**
+     * Get a random type value.
+     */
+    private function get_random_type() {
+        $types = array_keys(cg_get_default_types());
+        if (empty($types)) {
+            return 'historical-facts'; // Valore predefinito se l'array è vuoto
+        }
+        return $types[array_rand($types)];
+    }
+    
+    /**
+     * Get a random language value.
+     */
+    private function get_random_language() {
+        $languages = array_keys(cg_get_available_languages());
+        if (empty($languages)) {
+            return 'italiano'; // Valore predefinito se l'array è vuoto
+        }
+        return $languages[array_rand($languages)];
+    }
+    
+    /**
+     * Get a random tone value.
+     */
+    private function get_random_tone() {
+        $tones = array('Humorous', 'Serious', 'Surprising', 'Little-known');
+        return $tones[array_rand($tones)];
+    }
+    
+    /**
+     * Get a random source value.
+     */
+    private function get_random_source() {
+        $sources = array('Scientific studies', 'Historical records', 'Popular legends', 'Recent discoveries');
+        return $sources[array_rand($sources)];
+    }
+    
+    /**
+     * Get a random audience value.
+     */
+    private function get_random_audience() {
+        $audiences = array('General public', 'Children', 'Subject experts', 'Enthusiasts');
+        return $audiences[array_rand($audiences)];
     }
     
     /**
