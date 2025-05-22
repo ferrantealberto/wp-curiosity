@@ -35,6 +35,16 @@ class CG_Admin {
             'curiosity-generator-scheduler',
             array($this, 'render_scheduler_page')
         );
+        
+        // NUOVO: Aggiunta della pagina di gestione post
+        add_submenu_page(
+            'curiosity-generator-settings',
+            __('Gestione Post Curiosità', 'curiosity-generator'),
+            __('Gestione Post', 'curiosity-generator'),
+            'manage_options',
+            'curiosity-generator-posts',
+            array($this, 'render_posts_management_page')
+        );
     }
     
     /**
@@ -119,6 +129,150 @@ class CG_Admin {
     }
     
     /**
+     * NUOVO: Handler AJAX per le azioni bulk sui post
+     */
+    public function ajax_bulk_posts_action() {
+        // Verifica il nonce per la sicurezza
+        check_ajax_referer('cg_admin_nonce', 'nonce');
+        
+        // Verifica se l'utente ha i permessi
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => __('Non hai il permesso di eseguire questa azione.', 'curiosity-generator')));
+        }
+        
+        $action = isset($_POST['bulk_action']) ? sanitize_text_field($_POST['bulk_action']) : '';
+        $post_ids = isset($_POST['post_ids']) ? array_map('intval', $_POST['post_ids']) : array();
+        
+        if (empty($action) || empty($post_ids)) {
+            wp_send_json_error(array('message' => __('Azione o post non validi.', 'curiosity-generator')));
+        }
+        
+        $post_manager = new CG_Post_Manager();
+        
+        switch ($action) {
+            case 'publish':
+            case 'private':
+            case 'draft':
+            case 'pending':
+                $result = $post_manager->update_posts_status($post_ids, $action);
+                if ($result) {
+                    $status_labels = array(
+                        'publish' => __('pubblicati', 'curiosity-generator'),
+                        'private' => __('privati', 'curiosity-generator'),
+                        'draft' => __('bozze', 'curiosity-generator'),
+                        'pending' => __('in attesa di revisione', 'curiosity-generator')
+                    );
+                    $message = sprintf(__('Post aggiornati come %s con successo.', 'curiosity-generator'), $status_labels[$action]);
+                    wp_send_json_success(array('message' => $message));
+                } else {
+                    wp_send_json_error(array('message' => __('Errore nell\'aggiornamento dei post.', 'curiosity-generator')));
+                }
+                break;
+                
+            case 'trash':
+                $result = $post_manager->update_posts_status($post_ids, 'trash');
+                if ($result) {
+                    wp_send_json_success(array('message' => __('Post spostati nel cestino con successo.', 'curiosity-generator')));
+                } else {
+                    wp_send_json_error(array('message' => __('Errore nello spostamento dei post nel cestino.', 'curiosity-generator')));
+                }
+                break;
+                
+            case 'delete':
+                $result = $post_manager->delete_posts($post_ids, true);
+                if ($result) {
+                    wp_send_json_success(array('message' => __('Post eliminati definitivamente con successo.', 'curiosity-generator')));
+                } else {
+                    wp_send_json_error(array('message' => __('Errore nell\'eliminazione definitiva dei post.', 'curiosity-generator')));
+                }
+                break;
+                
+            default:
+                wp_send_json_error(array('message' => __('Azione non riconosciuta.', 'curiosity-generator')));
+        }
+    }
+    
+    /**
+     * NUOVO: Handler AJAX per il caricamento dei post con filtri
+     */
+    public function ajax_load_posts() {
+        // Verifica il nonce per la sicurezza
+        check_ajax_referer('cg_admin_nonce', 'nonce');
+        
+        // Verifica se l'utente ha i permessi
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => __('Non hai il permesso di eseguire questa azione.', 'curiosity-generator')));
+        }
+        
+        $search = isset($_POST['search']) ? sanitize_text_field($_POST['search']) : '';
+        $status = isset($_POST['status']) ? sanitize_text_field($_POST['status']) : '';
+        $per_page = isset($_POST['per_page']) ? intval($_POST['per_page']) : 20;
+        $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+        $orderby = isset($_POST['orderby']) ? sanitize_text_field($_POST['orderby']) : 'date';
+        $order = isset($_POST['order']) ? sanitize_text_field($_POST['order']) : 'DESC';
+        
+        $args = array(
+            'posts_per_page' => $per_page,
+            'paged' => $page,
+            'orderby' => $orderby,
+            'order' => $order,
+            'meta_query' => array(
+                array(
+                    'key' => 'cg_generated',
+                    'value' => true,
+                    'compare' => '='
+                )
+            )
+        );
+        
+        // Filtro per status
+        if (!empty($status) && $status !== 'any') {
+            $args['post_status'] = $status;
+        } else {
+            $args['post_status'] = 'any';
+        }
+        
+        // Filtro per ricerca
+        if (!empty($search)) {
+            $args['s'] = $search;
+        }
+        
+        $posts = get_posts($args);
+        
+        // Conta il totale per la paginazione
+        $count_args = $args;
+        $count_args['posts_per_page'] = -1;
+        unset($count_args['paged']);
+        $all_posts = get_posts($count_args);
+        $total = count($all_posts);
+        
+        $response_data = array(
+            'posts' => array(),
+            'total' => $total,
+            'pages' => ceil($total / $per_page),
+            'current_page' => $page
+        );
+        
+        foreach ($posts as $post) {
+            $response_data['posts'][] = array(
+                'ID' => $post->ID,
+                'title' => $post->post_title,
+                'status' => $post->post_status,
+                'date' => $post->post_date,
+                'author' => get_the_author_meta('display_name', $post->post_author),
+                'keyword' => get_post_meta($post->ID, 'cg_keyword', true),
+                'type' => get_post_meta($post->ID, 'cg_type', true),
+                'language' => get_post_meta($post->ID, 'cg_language', true),
+                'view_count' => get_post_meta($post->ID, 'cg_view_count', true),
+                'edit_link' => get_edit_post_link($post->ID),
+                'view_link' => get_permalink($post->ID)
+            );
+        }
+        
+        wp_send_json_success($response_data);
+    }
+    
+    /**
      * Sanitize number input.
      */
     public function sanitize_number($input) {
@@ -131,7 +285,8 @@ class CG_Admin {
     public function enqueue_admin_scripts($hook) {
         if ('toplevel_page_curiosity-generator-settings' === $hook || 
             'curiosity-generator_page_curiosity-generator-credits' === $hook ||
-            'curiosity-generator_page_curiosity-generator-scheduler' === $hook) {
+            'curiosity-generator_page_curiosity-generator-scheduler' === $hook ||
+            'curiosity-generator_page_curiosity-generator-posts' === $hook) {
             
             wp_enqueue_style('cg-admin-styles', CG_PLUGIN_URL . 'admin/css/cg-admin-styles.css', array(), CG_VERSION);
             
@@ -150,7 +305,10 @@ class CG_Admin {
                 'api_key_required_text' => __('Inserisci prima una chiave API.', 'curiosity-generator'),
                 'models_refreshed_text' => __('Modelli aggiornati con successo!', 'curiosity-generator'),
                 'error_text' => __('Si è verificato un errore durante l\'aggiornamento dei modelli. Riprova.', 'curiosity-generator'),
-                'select_model_text' => __('Seleziona un modello', 'curiosity-generator')
+                'select_model_text' => __('Seleziona un modello', 'curiosity-generator'),
+                'confirm_delete_text' => __('Sei sicuro di voler eliminare definitivamente i post selezionati?', 'curiosity-generator'),
+                'no_posts_selected_text' => __('Seleziona almeno un post per eseguire questa azione.', 'curiosity-generator'),
+                'loading_text' => __('Caricamento...', 'curiosity-generator')
             ));
             
             // Carica gli stili e gli script per la pagina di programmazione solo se necessario
@@ -167,6 +325,11 @@ class CG_Admin {
                     'source_description_text' => __('Seleziona un tipo di fonte o lascia vuoto per casuale', 'curiosity-generator'),
                     'audience_description_text' => __('Seleziona un pubblico o lascia vuoto per casuale', 'curiosity-generator')
                 ));
+            }
+            
+            // NUOVO: Script per la gestione dei post
+            if ('curiosity-generator_page_curiosity-generator-posts' === $hook) {
+                wp_enqueue_script('cg-posts-management', CG_PLUGIN_URL . 'admin/js/cg-posts-management.js', array('jquery'), CG_VERSION, true);
             }
         }
     }
@@ -190,5 +353,12 @@ class CG_Admin {
      */
     public function render_scheduler_page() {
         require_once CG_PLUGIN_DIR . 'admin/views/scheduler-page.php';
+    }
+    
+    /**
+     * NUOVO: Render posts management page.
+     */
+    public function render_posts_management_page() {
+        require_once CG_PLUGIN_DIR . 'admin/views/posts-management-page.php';
     }
 }

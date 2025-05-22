@@ -64,6 +64,10 @@ class CG_Main {
         // Admin AJAX handlers
         add_action('wp_ajax_cg_refresh_models', array($admin, 'ajax_refresh_models'));
         add_action('wp_ajax_cg_update_user_credits', array($admin, 'ajax_update_user_credits'));
+        
+        // NUOVO: Handler AJAX per la gestione dei post
+        add_action('wp_ajax_cg_bulk_posts_action', array($admin, 'ajax_bulk_posts_action'));
+        add_action('wp_ajax_cg_load_posts', array($admin, 'ajax_load_posts'));
     }
 
     /**
@@ -111,7 +115,7 @@ class CG_Main {
         $default_options = array(
             'cg_openrouter_api_key' => '',
             'cg_llm_model' => 'anthropic/claude-3-opus',
-            'cg_max_curiosities' => 5,
+            'cg_max_curiosities' => 20, // MODIFICATO: Aumentato a 20
             'cg_min_curiosity_length' => 100,
             'cg_default_author' => 1,
             'cg_adsense_inline_code' => '',

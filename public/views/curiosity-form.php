@@ -138,8 +138,8 @@
         
         <div class="cg-form-group">
             <label for="cg-count"><?php _e('Numero di Curiosità', 'curiosity-generator'); ?></label>
-            <input type="number" id="cg-count" name="count" min="1" max="<?php echo esc_attr(get_option('cg_max_curiosities', 5)); ?>" value="1">
-            <p class="cg-help-text"><?php echo sprintf(__('Genera fino a %d curiosità alla volta.', 'curiosity-generator'), get_option('cg_max_curiosities', 5)); ?></p>
+            <input type="number" id="cg-count" name="count" min="1" max="<?php echo esc_attr(get_option('cg_max_curiosities', 20)); ?>" value="1">
+            <p class="cg-help-text"><?php echo sprintf(__('Genera fino a %d curiosità alla volta.', 'curiosity-generator'), get_option('cg_max_curiosities', 20)); ?></p>
         </div>
         
         <div class="cg-form-actions">
