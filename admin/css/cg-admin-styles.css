@@ -193,6 +193,7 @@ option.cg-model-supports-images {
     width: 100%;
     max-width: 600px;
 }
+
 /* Tabs styling */
 .cg-scheduler-container .nav-tab-wrapper {
     margin-bottom: 20px;
@@ -591,6 +592,12 @@ input:checked + .cg-toggle-slider:before {
     width: 80px;
 }
 
+/* NUOVO: Colonna immagine */
+.cg-image-column {
+    width: 100px;
+    text-align: center;
+}
+
 .cg-date-column {
     width: 130px;
 }
@@ -637,6 +644,138 @@ input:checked + .cg-toggle-slider:before {
 .cg-status-trash {
     background: #8c8f94;
     color: white;
+}
+
+/* NUOVO: Stili per indicatori stato immagine */
+.cg-image-status {
+    display: inline-block;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.cg-image-yes {
+    color: #46b450;
+}
+
+.cg-image-no {
+    color: #dc3638;
+}
+
+/* NUOVO: Pulsante generazione singola immagine */
+.cg-generate-single-image {
+    padding: 2px 4px;
+    font-size: 12px;
+    line-height: 1;
+    border: 1px solid #0073aa;
+    background: #0073aa;
+    color: white;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cg-generate-single-image:hover {
+    background: #005177;
+    border-color: #005177;
+}
+
+.cg-generate-single-image:disabled {
+    background: #ccc;
+    border-color: #ccc;
+    cursor: not-allowed;
+}
+
+.cg-generate-single-image .dashicons {
+    font-size: 12px;
+    width: 12px;
+    height: 12px;
+}
+
+/* NUOVO: Evidenziazione righe senza immagine */
+.cg-no-featured-image {
+    background-color: rgba(255, 193, 7, 0.1);
+}
+
+.cg-no-featured-image:hover {
+    background-color: rgba(255, 193, 7, 0.15);
+}
+
+/* NUOVO: Progress bar per generazione di massa */
+.cg-progress-container {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.cg-progress-container h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #23282d;
+}
+
+.cg-progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.cg-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0073aa, #005177);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+    position: relative;
+}
+
+.cg-progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    animation: progress-shine 2s infinite;
+}
+
+@keyframes progress-shine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.cg-progress-text {
+    font-weight: 600;
+    color: #23282d;
+    margin-bottom: 10px;
+}
+
+#cg-progress-status {
+    font-size: 14px;
+    color: #646970;
+    margin-bottom: 15px;
+    min-height: 20px;
+}
+
+#cg-stop-generation {
+    background: #dc3232;
+    border-color: #dc3232;
+    color: white;
+}
+
+#cg-stop-generation:hover {
+    background: #c92c2c;
+    border-color: #c92c2c;
 }
 
 .cg-row-actions {
@@ -691,6 +830,35 @@ input:checked + .cg-toggle-slider:before {
     }
     
     .cg-posts-table {
-        min-width: 800px;
+        min-width: 900px; /* Aumentato per la nuova colonna */
     }
+    
+    .cg-progress-container {
+        padding: 15px;
+    }
+    
+    .cg-progress-text {
+        font-size: 14px;
+    }
+    
+    #cg-progress-status {
+        font-size: 12px;
+    }
+}
+
+/* NUOVO: Messaggi di notifica migliorati */
+.notice.cg-image-generation-notice {
+    border-left-color: #0073aa;
+}
+
+.notice.cg-image-generation-notice.notice-success {
+    border-left-color: #46b450;
+}
+
+.notice.cg-image-generation-notice.notice-warning {
+    border-left-color: #ffb900;
+}
+
+.notice.cg-image-generation-notice.notice-error {
+    border-left-color: #dc3232;
 }

@@ -430,3 +430,82 @@ msgstr "Arabo"
 
 msgid "Hindi"
 msgstr "Hindi"
+
+# NUOVO: Traduzioni per la gestione delle immagini
+msgid "Featured Image"
+msgstr "Immagine in Evidenza"
+
+msgid "Image"
+msgstr "Immagine"
+
+msgid "With Image"
+msgstr "Con Immagine"
+
+msgid "Without Image"
+msgstr "Senza Immagine"
+
+msgid "Featured Image:"
+msgstr "Immagine in Evidenza:"
+
+msgid "All"
+msgstr "Tutti"
+
+msgid "With image"
+msgstr "Con immagine"
+
+msgid "Without image"
+msgstr "Senza immagine"
+
+msgid "Generate Featured Image"
+msgstr "Genera Immagine in Evidenza"
+
+msgid "Select without image"
+msgstr "Seleziona senza immagine"
+
+msgid "Generate Images in Progress..."
+msgstr "Generazione Immagini in Corso..."
+
+msgid "Stop"
+msgstr "Interrompi"
+
+msgid "Featured image generated successfully!"
+msgstr "Immagine in evidenza generata con successo!"
+
+msgid "Invalid post ID."
+msgstr "ID del post non valido."
+
+msgid "Invalid post or not a generated curiosity."
+msgstr "Post non valido o non è una curiosità generata."
+
+msgid "Post already has a featured image."
+msgstr "Il post ha già un'immagine in evidenza."
+
+msgid "Error generating featured image."
+msgstr "Errore nella generazione dell'immagine in evidenza."
+
+msgid "Connection error during image generation."
+msgstr "Errore di connessione durante la generazione dell'immagine."
+
+msgid "Generation interrupted. %d of %d images generated."
+msgstr "Generazione interrotta. %d di %d immagini generate."
+
+msgid "Generation completed! %d images generated."
+msgstr "Generazione completata! %d immagini generate."
+
+msgid "All selected posts already have a featured image."
+msgstr "Tutti i post selezionati hanno già un'immagine in evidenza."
+
+msgid "Generate featured images for %d posts? This operation may take some time."
+msgstr "Generare immagini in evidenza per %d post? Questa operazione potrebbe richiedere del tempo."
+
+msgid "Interruption..."
+msgstr "Interruzione..."
+
+msgid "Generating image for: %s"
+msgstr "Generando immagine per: %s"
+
+msgid "Con immagine"
+msgstr "Con immagine"
+
+msgid "Senza immagine"
+msgstr "Senza immagine"

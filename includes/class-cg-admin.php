@@ -206,6 +206,7 @@ class CG_Admin {
         
         $search = isset($_POST['search']) ? sanitize_text_field($_POST['search']) : '';
         $status = isset($_POST['status']) ? sanitize_text_field($_POST['status']) : '';
+        $featured_image = isset($_POST['featured_image']) ? sanitize_text_field($_POST['featured_image']) : '';
         $per_page = isset($_POST['per_page']) ? intval($_POST['per_page']) : 20;
         $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
         $orderby = isset($_POST['orderby']) ? sanitize_text_field($_POST['orderby']) : 'date';
@@ -230,6 +231,21 @@ class CG_Admin {
             $args['post_status'] = $status;
         } else {
             $args['post_status'] = 'any';
+        }
+        
+        // NUOVO: Filtro per immagine in evidenza
+        if (!empty($featured_image) && $featured_image !== 'any') {
+            if ($featured_image === 'with_image') {
+                $args['meta_query'][] = array(
+                    'key' => '_thumbnail_id',
+                    'compare' => 'EXISTS'
+                );
+            } elseif ($featured_image === 'without_image') {
+                $args['meta_query'][] = array(
+                    'key' => '_thumbnail_id',
+                    'compare' => 'NOT EXISTS'
+                );
+            }
         }
         
         // Filtro per ricerca
@@ -264,12 +280,103 @@ class CG_Admin {
                 'type' => get_post_meta($post->ID, 'cg_type', true),
                 'language' => get_post_meta($post->ID, 'cg_language', true),
                 'view_count' => get_post_meta($post->ID, 'cg_view_count', true),
+                'has_featured_image' => has_post_thumbnail($post->ID), // NUOVO
                 'edit_link' => get_edit_post_link($post->ID),
                 'view_link' => get_permalink($post->ID)
             );
         }
         
         wp_send_json_success($response_data);
+    }
+    
+    /**
+     * NUOVO: Handler AJAX per la generazione di immagini in evidenza
+     */
+    public function ajax_generate_featured_image() {
+        // Verifica il nonce per la sicurezza
+        check_ajax_referer('cg_admin_nonce', 'nonce');
+        
+        // Verifica se l'utente ha i permessi
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => __('Non hai il permesso di eseguire questa azione.', 'curiosity-generator')));
+        }
+        
+        $post_id = isset($_POST['post_id']) ? intval($_POST['post_id']) : 0;
+        
+        if (!$post_id) {
+            wp_send_json_error(array('message' => __('ID del post non valido.', 'curiosity-generator')));
+        }
+        
+        // Verifica se il post esiste e se è una curiosità
+        $post = get_post($post_id);
+        if (!$post || !get_post_meta($post_id, 'cg_generated', true)) {
+            wp_send_json_error(array('message' => __('Post non valido o non è una curiosità generata.', 'curiosity-generator')));
+        }
+        
+        // Verifica se il post ha già un'immagine in evidenza
+        if (has_post_thumbnail($post_id)) {
+            wp_send_json_error(array('message' => __('Il post ha già un\'immagine in evidenza.', 'curiosity-generator')));
+        }
+        
+        // Ottieni il titolo e il contenuto per la generazione del prompt
+        $title = get_the_title($post_id);
+        $content = wp_strip_all_tags($post->post_content);
+        $keyword = get_post_meta($post_id, 'cg_keyword', true);
+        $type = get_post_meta($post_id, 'cg_type', true);
+        $language = get_post_meta($post_id, 'cg_language', true);
+        
+        // Crea un prompt per la generazione dell'immagine basato sulla lingua
+        if ($language === 'italiano' || empty($language)) {
+            $prompt = "Crea un'immagine dettagliata e realistica che illustri questa curiosità: '{$title}'. ";
+            $prompt .= "Argomento principale: {$keyword}. ";
+            if (!empty($type)) {
+                $types_map = array(
+                    'historical-facts' => 'fatti storici',
+                    'science-nature' => 'scienza e natura',
+                    'technology' => 'tecnologia',
+                    'art-culture' => 'arte e cultura',
+                    'geography' => 'geografia',
+                    'famous-people' => 'personaggi famosi',
+                    'mysteries' => 'misteri',
+                    'statistics' => 'statistiche',
+                    'word-origins' => 'origine delle parole',
+                    'traditions' => 'tradizioni'
+                );
+                $type_italian = isset($types_map[$type]) ? $types_map[$type] : $type;
+                $prompt .= "Tipo di curiosità: {$type_italian}. ";
+            }
+            $prompt .= "L'immagine deve essere educativa, coinvolgente e adatta per un blog di divulgazione. ";
+            $prompt .= "Stile realistico e di alta qualità, con colori vivaci e composizione interessante.";
+        } else {
+            $prompt = "Create a detailed and realistic image that illustrates this curiosity: '{$title}'. ";
+            $prompt .= "Main topic: {$keyword}. ";
+            if (!empty($type)) {
+                $prompt .= "Type of curiosity: {$type}. ";
+            }
+            $prompt .= "The image should be educational, engaging and suitable for an educational blog. ";
+            $prompt .= "Realistic style and high quality, with vivid colors and interesting composition.";
+        }
+        
+        // Limita la lunghezza del prompt
+        $prompt = substr($prompt, 0, 1000);
+        
+        // Inizializza OpenRouter
+        $openrouter = new CG_OpenRouter();
+        
+        // Genera l'immagine
+        $result = $openrouter->generate_image($prompt, $post_id);
+        
+        if (is_wp_error($result)) {
+            wp_send_json_error(array('message' => $result->get_error_message()));
+        }
+        
+        // Ottieni l'URL dell'immagine
+        $image_url = wp_get_attachment_image_url($result, 'full');
+        
+        wp_send_json_success(array(
+            'message' => __('Immagine in evidenza generata con successo!', 'curiosity-generator'),
+            'image_url' => $image_url
+        ));
     }
     
     /**

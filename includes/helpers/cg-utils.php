@@ -111,6 +111,7 @@ function cg_get_default_models() {
         'openai/gpt-3.5-turbo' => 'GPT-3.5 Turbo (più veloce)',
         'google/gemini-pro' => 'Gemini Pro',
         'meta-llama/llama-3-70b-instruct' => 'Llama 3 70B',
+        'qwen/qwen-2.5-vl-72b-instruct' => 'Qwen2.5-VL-72B-Instruct (Vision-Language)',
         'openai/dall-e-3' => 'DALL·E 3 (Supporta immagini)',
         'stability/stable-diffusion-xl-1024-v1-0' => 'Stable Diffusion XL 1.0 (Supporta immagini)',
         'stability/stable-diffusion-3-large' => 'Stable Diffusion 3 Large (Supporta immagini)',
@@ -127,13 +128,38 @@ function cg_get_default_models() {
 function cg_model_can_generate_images($model_id) {
     $image_capable_models = array(
         'openai/dall-e-3',
+        'openai/dall-e-2',
         'stability/stable-diffusion-xl-1024-v1-0',
         'stability/stable-diffusion-3-large',
+        'stability/stable-diffusion-2-1',
         'midjourney/mj',
-        'google/imagen-2'
+        'google/imagen-2',
+        'runwayml/stable-diffusion-v1-5',
+        'black-forest-labs/flux-schnell',
+        'black-forest-labs/flux-dev',
+        'qwen/qwen-2.5-vl-72b-instruct' // NUOVO: Aggiunto per supportare la generazione tramite descrizione
     );
     
     return in_array($model_id, $image_capable_models);
+}
+
+/**
+ * Verifica se un modello è un modello vision-language che può analizzare e descrivere immagini.
+ * @param string $model_id ID del modello da verificare
+ * @return bool True se il modello supporta vision-language, false altrimenti
+ */
+function cg_model_is_vision_language($model_id) {
+    $vision_language_models = array(
+        'qwen/qwen-2.5-vl-72b-instruct',
+        'anthropic/claude-3-opus',
+        'anthropic/claude-3-sonnet',
+        'anthropic/claude-3-haiku',
+        'openai/gpt-4-vision-preview',
+        'openai/gpt-4o',
+        'google/gemini-pro-vision'
+    );
+    
+    return in_array($model_id, $vision_language_models);
 }
 
 /**
@@ -211,4 +237,123 @@ function cg_get_users_for_dropdown() {
     }
     
     return $options;
+}
+
+/**
+ * NUOVO: Genera un prompt ottimizzato per la generazione di immagini basato sui parametri della curiosità.
+ * 
+ * @param array $params Parametri della curiosità
+ * @param string $title Titolo della curiosità
+ * @param string $content Contenuto della curiosità
+ * @return string Prompt ottimizzato per la generazione di immagini
+ */
+function cg_generate_image_prompt($params, $title = '', $content = '') {
+    $keyword = isset($params['keyword']) ? $params['keyword'] : '';
+    $type = isset($params['type']) ? $params['type'] : '';
+    $language = isset($params['language']) ? $params['language'] : 'italiano';
+    
+    // Mappa dei tipi di curiosità per termini visivi
+    $visual_type_map = array(
+        'historical-facts' => 'historical scene, period clothing, ancient architecture',
+        'science-nature' => 'scientific illustration, natural phenomena, laboratory setting',
+        'technology' => 'futuristic design, modern technology, digital interface',
+        'art-culture' => 'artistic composition, cultural symbols, museum setting',
+        'geography' => 'landscape, geographical features, map elements',
+        'famous-people' => 'portrait style, period appropriate setting',
+        'mysteries' => 'mysterious atmosphere, enigmatic elements, dark lighting',
+        'statistics' => 'data visualization, charts, infographic style',
+        'word-origins' => 'typography, linguistic elements, book setting',
+        'traditions' => 'cultural ceremony, traditional costume, festive atmosphere'
+    );
+    
+    // Costruisci il prompt base
+    if ($language === 'italiano' || empty($language)) {
+        $base_prompt = "Crea un'immagine dettagliata e realistica che illustri: {$title}. ";
+        $base_prompt .= "Tema principale: {$keyword}. ";
+        $style_instruction = "Stile realistico e professionale, adatto per un blog educativo. ";
+        $quality_instruction = "Alta qualità, colori vivaci, composizione equilibrata, illuminazione naturale.";
+    } else {
+        $base_prompt = "Create a detailed and realistic image that illustrates: {$title}. ";
+        $base_prompt .= "Main theme: {$keyword}. ";
+        $style_instruction = "Realistic and professional style, suitable for an educational blog. ";
+        $quality_instruction = "High quality, vivid colors, balanced composition, natural lighting.";
+    }
+    
+    // Aggiungi elementi specifici del tipo
+    if (!empty($type) && isset($visual_type_map[$type])) {
+        $base_prompt .= "Visual elements: " . $visual_type_map[$type] . ". ";
+    }
+    
+    // Combina tutto
+    $final_prompt = $base_prompt . $style_instruction . $quality_instruction;
+    
+    // Limita la lunghezza del prompt
+    return substr($final_prompt, 0, 1000);
+}
+
+/**
+ * NUOVO: Valida se un post è idoneo per la generazione di immagini.
+ * 
+ * @param int $post_id ID del post
+ * @return bool|WP_Error True se valido, WP_Error se non valido
+ */
+function cg_validate_post_for_image_generation($post_id) {
+    $post = get_post($post_id);
+    
+    if (!$post) {
+        return new WP_Error('invalid_post', __('Post non trovato.', 'curiosity-generator'));
+    }
+    
+    // Verifica se è una curiosità generata
+    if (!get_post_meta($post_id, 'cg_generated', true)) {
+        return new WP_Error('not_curiosity', __('Il post non è una curiosità generata.', 'curiosity-generator'));
+    }
+    
+    // Verifica se ha già un'immagine in evidenza
+    if (has_post_thumbnail($post_id)) {
+        return new WP_Error('has_image', __('Il post ha già un\'immagine in evidenza.', 'curiosity-generator'));
+    }
+    
+    return true;
+}
+
+/**
+ * NUOVO: Ottieni statistiche di utilizzo delle immagini.
+ * 
+ * @return array Statistiche delle immagini
+ */
+function cg_get_image_generation_stats() {
+    global $wpdb;
+    
+    // Query per contare le immagini generate oggi
+    $today = date('Y-m-d');
+    $images_today = $wpdb->get_var($wpdb->prepare("
+        SELECT COUNT(*)
+        FROM {$wpdb->postmeta} pm1
+        INNER JOIN {$wpdb->postmeta} pm2 ON pm1.post_id = pm2.post_id
+        INNER JOIN {$wpdb->posts} p ON pm1.post_id = p.ID
+        WHERE pm1.meta_key = 'cg_generated'
+        AND pm1.meta_value = '1'
+        AND pm2.meta_key = '_thumbnail_id'
+        AND DATE(p.post_date) = %s
+    ", $today));
+    
+    // Query per contare le immagini generate questa settimana
+    $week_start = date('Y-m-d', strtotime('monday this week'));
+    $images_week = $wpdb->get_var($wpdb->prepare("
+        SELECT COUNT(*)
+        FROM {$wpdb->postmeta} pm1
+        INNER JOIN {$wpdb->postmeta} pm2 ON pm1.post_id = pm2.post_id
+        INNER JOIN {$wpdb->posts} p ON pm1.post_id = p.ID
+        WHERE pm1.meta_key = 'cg_generated'
+        AND pm1.meta_value = '1'
+        AND pm2.meta_key = '_thumbnail_id'
+        AND DATE(p.post_date) >= %s
+    ", $week_start));
+    
+    return array(
+        'today' => intval($images_today),
+        'week' => intval($images_week),
+        'limit_reached' => false // Implementare eventuali limiti di rate limiting
+    );
 }

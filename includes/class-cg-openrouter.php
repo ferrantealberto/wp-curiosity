@@ -167,34 +167,38 @@ class CG_OpenRouter {
     }
 
     /**
-     * Genera un'immagine utilizzando il modello LLM selezionato.
+     * Genera un'immagine utilizzando il modello Qwen2.5-VL-72B-Instruct.
      */
     public function generate_image($prompt, $post_id) {
         $api_key = $this->get_api_key();
-        $model = $this->get_model();
 
         if (empty($api_key)) {
             return new WP_Error('missing_api_key', 'OpenRouter API key is missing');
         }
 
-        // Verifica se il modello selezionato può generare immagini
-        $can_generate_images = cg_model_can_generate_images($model);
-        if (!$can_generate_images) {
-            return new WP_Error('model_not_supported', 'Il modello selezionato non supporta la generazione di immagini');
-        }
+        // AGGIORNATO: Usa il modello specificato Qwen2.5-VL-72B-Instruct per la generazione di immagini
+        $model = 'qwen/qwen-2.5-vl-72b-instruct';
 
-        // Prepara la richiesta API
-        $endpoint = 'https://openrouter.ai/api/v1/images/generations';
-        
+        // Prepara la richiesta per il modello vision-language
         $request_body = array(
-            'model' => $model, // Usa direttamente il modello LLM selezionato
-            'prompt' => $prompt,
-            'n' => 1,
-            'size' => '1024x1024',
-            'response_format' => 'url'
+            'model' => $model,
+            'messages' => array(
+                array(
+                    'role' => 'user',
+                    'content' => array(
+                        array(
+                            'type' => 'text',
+                            'text' => "Generate a detailed image description based on this prompt: {$prompt}\n\nCreate a comprehensive description for an AI image generator that includes:\n- Main subject and composition\n- Visual style and artistic approach\n- Color palette and lighting\n- Technical details for best results\n- Mood and atmosphere\n\nThe description should be in English and optimized for AI image generation."
+                        )
+                    )
+                )
+            ),
+            'temperature' => 0.7,
+            'max_tokens' => 500
         );
 
-        $response = wp_remote_post($endpoint, array(
+        // Prima richiesta: ottieni la descrizione dettagliata dell'immagine
+        $response = wp_remote_post($this->api_endpoint, array(
             'headers' => array(
                 'Authorization' => 'Bearer ' . $api_key,
                 'Content-Type' => 'application/json',
@@ -211,12 +215,47 @@ class CG_OpenRouter {
         $body = wp_remote_retrieve_body($response);
         $data = json_decode($body, true);
 
-        if (empty($data) || !isset($data['data'][0]['url'])) {
-            return new WP_Error('api_error', 'Invalid response from OpenRouter API. Il modello selezionato potrebbe non supportare la generazione di immagini.');
+        if (empty($data) || !isset($data['choices'][0]['message']['content'])) {
+            return new WP_Error('api_error', 'Invalid response from OpenRouter API for image description');
+        }
+
+        $enhanced_prompt = $data['choices'][0]['message']['content'];
+
+        // Seconda richiesta: genera l'immagine usando DALL-E 3 con la descrizione migliorata
+        $image_endpoint = 'https://openrouter.ai/api/v1/images/generations';
+        
+        $image_request_body = array(
+            'model' => 'openai/dall-e-3',
+            'prompt' => $enhanced_prompt,
+            'n' => 1,
+            'size' => '1024x1024',
+            'quality' => 'hd',
+            'response_format' => 'url'
+        );
+
+        $image_response = wp_remote_post($image_endpoint, array(
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $api_key,
+                'Content-Type' => 'application/json',
+                'HTTP-Referer' => home_url()
+            ),
+            'body' => json_encode($image_request_body),
+            'timeout' => 60
+        ));
+
+        if (is_wp_error($image_response)) {
+            return $image_response;
+        }
+
+        $image_body = wp_remote_retrieve_body($image_response);
+        $image_data = json_decode($image_body, true);
+
+        if (empty($image_data) || !isset($image_data['data'][0]['url'])) {
+            return new WP_Error('api_error', 'Invalid response from OpenRouter API for image generation: ' . $image_body);
         }
 
         // Ottieni l'URL dell'immagine generata
-        $image_url = $data['data'][0]['url'];
+        $image_url = $image_data['data'][0]['url'];
         
         // Scarica l'immagine e impostala come featured image
         return $this->set_image_as_featured($image_url, $post_id);
@@ -230,8 +269,13 @@ class CG_OpenRouter {
         require_once(ABSPATH . 'wp-admin/includes/file.php');
         require_once(ABSPATH . 'wp-admin/includes/image.php');
         
+        // Genera un nome file descrittivo
+        $post_title = get_the_title($post_id);
+        $safe_title = sanitize_file_name($post_title);
+        $filename = 'curiosity-' . $post_id . '-' . substr($safe_title, 0, 50) . '.jpg';
+        
         // Scarica l'immagine
-        $image_id = media_sideload_image($image_url, $post_id, '', 'id');
+        $image_id = media_sideload_image($image_url, $post_id, $filename, 'id');
         
         if (is_wp_error($image_id)) {
             return $image_id;
@@ -239,6 +283,9 @@ class CG_OpenRouter {
         
         // Imposta l'immagine come featured image
         set_post_thumbnail($post_id, $image_id);
+        
+        // Aggiungi metadati all'immagine
+        update_post_meta($image_id, '_wp_attachment_image_alt', 'Immagine in evidenza per: ' . get_the_title($post_id));
         
         return $image_id;
     }

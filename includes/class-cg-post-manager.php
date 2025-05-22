@@ -298,4 +298,44 @@ class CG_Post_Manager {
         
         return $counts;
     }
+    
+    /**
+     * NUOVO: Get curiosity posts featured image statistics.
+     * 
+     * @return array Stats for featured images
+     */
+    public function get_posts_featured_image_stats() {
+        global $wpdb;
+        
+        // Query per post con immagine in evidenza
+        $with_image_query = "SELECT COUNT(*) as count 
+                            FROM {$wpdb->posts} p
+                            INNER JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id
+                            INNER JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id
+                            WHERE pm1.meta_key = 'cg_generated' 
+                            AND pm1.meta_value = '1'
+                            AND pm2.meta_key = '_thumbnail_id'
+                            AND p.post_type = 'post'
+                            AND p.post_status != 'trash'";
+        
+        // Query per post senza immagine in evidenza
+        $without_image_query = "SELECT COUNT(*) as count 
+                               FROM {$wpdb->posts} p
+                               INNER JOIN {$wpdb->postmeta} pm1 ON p.ID = pm1.post_id
+                               LEFT JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = '_thumbnail_id'
+                               WHERE pm1.meta_key = 'cg_generated' 
+                               AND pm1.meta_value = '1'
+                               AND pm2.meta_id IS NULL
+                               AND p.post_type = 'post'
+                               AND p.post_status != 'trash'";
+        
+        $with_image_count = $wpdb->get_var($with_image_query);
+        $without_image_count = $wpdb->get_var($without_image_query);
+        
+        return array(
+            'with_image' => intval($with_image_count),
+            'without_image' => intval($without_image_count),
+            'total' => intval($with_image_count) + intval($without_image_count)
+        );
+    }
 }

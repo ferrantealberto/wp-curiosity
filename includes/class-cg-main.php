@@ -68,6 +68,9 @@ class CG_Main {
         // NUOVO: Handler AJAX per la gestione dei post
         add_action('wp_ajax_cg_bulk_posts_action', array($admin, 'ajax_bulk_posts_action'));
         add_action('wp_ajax_cg_load_posts', array($admin, 'ajax_load_posts'));
+        
+        // NUOVO: Handler AJAX per la generazione di immagini in evidenza
+        add_action('wp_ajax_cg_generate_featured_image', array($admin, 'ajax_generate_featured_image'));
     }
 
     /**

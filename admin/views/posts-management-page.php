@@ -7,6 +7,7 @@ if (!defined('WPINC')) {
 // Inizializza il Post Manager per ottenere statistiche
 $post_manager = new CG_Post_Manager();
 $counts = $post_manager->get_posts_count_by_status();
+$image_stats = $post_manager->get_posts_featured_image_stats();
 ?>
 
 <div class="wrap">
@@ -36,12 +37,12 @@ $counts = $post_manager->get_posts_count_by_status();
                 <span class="cg-stat-label"><?php _e('Bozze', 'curiosity-generator'); ?></span>
             </div>
             <div class="cg-stat-item">
-                <span class="cg-stat-number"><?php echo $counts['pending']; ?></span>
-                <span class="cg-stat-label"><?php _e('In Attesa', 'curiosity-generator'); ?></span>
+                <span class="cg-stat-number"><?php echo $image_stats['with_image']; ?></span>
+                <span class="cg-stat-label"><?php _e('Con Immagine', 'curiosity-generator'); ?></span>
             </div>
             <div class="cg-stat-item">
-                <span class="cg-stat-number"><?php echo $counts['trash']; ?></span>
-                <span class="cg-stat-label"><?php _e('Cestino', 'curiosity-generator'); ?></span>
+                <span class="cg-stat-number"><?php echo $image_stats['without_image']; ?></span>
+                <span class="cg-stat-label"><?php _e('Senza Immagine', 'curiosity-generator'); ?></span>
             </div>
         </div>
     </div>
@@ -63,6 +64,15 @@ $counts = $post_manager->get_posts_count_by_status();
                     <option value="draft"><?php _e('Bozze', 'curiosity-generator'); ?></option>
                     <option value="pending"><?php _e('In attesa di revisione', 'curiosity-generator'); ?></option>
                     <option value="trash"><?php _e('Cestino', 'curiosity-generator'); ?></option>
+                </select>
+            </div>
+            
+            <div class="cg-filter-group">
+                <label for="cg-filter-featured-image"><?php _e('Immagine in Evidenza:', 'curiosity-generator'); ?></label>
+                <select id="cg-filter-featured-image">
+                    <option value="any"><?php _e('Tutti', 'curiosity-generator'); ?></option>
+                    <option value="with_image"><?php _e('Con immagine', 'curiosity-generator'); ?></option>
+                    <option value="without_image"><?php _e('Senza immagine', 'curiosity-generator'); ?></option>
                 </select>
             </div>
             
@@ -94,6 +104,7 @@ $counts = $post_manager->get_posts_count_by_status();
                     <option value="pending"><?php _e('Metti in attesa di revisione', 'curiosity-generator'); ?></option>
                     <option value="trash"><?php _e('Sposta nel cestino', 'curiosity-generator'); ?></option>
                     <option value="delete"><?php _e('Elimina definitivamente', 'curiosity-generator'); ?></option>
+                    <option value="generate_featured_image"><?php _e('Genera Immagine in Evidenza', 'curiosity-generator'); ?></option>
                 </select>
                 <button type="button" id="cg-apply-bulk-action" class="button"><?php _e('Applica', 'curiosity-generator'); ?></button>
             </div>
@@ -101,6 +112,7 @@ $counts = $post_manager->get_posts_count_by_status();
             <div class="cg-bulk-group">
                 <button type="button" id="cg-select-all-posts" class="button"><?php _e('Seleziona tutti', 'curiosity-generator'); ?></button>
                 <button type="button" id="cg-deselect-all-posts" class="button"><?php _e('Deseleziona tutti', 'curiosity-generator'); ?></button>
+                <button type="button" id="cg-select-no-image-posts" class="button button-primary"><?php _e('Seleziona senza immagine', 'curiosity-generator'); ?></button>
             </div>
         </div>
     </div>
@@ -114,6 +126,19 @@ $counts = $post_manager->get_posts_count_by_status();
     <!-- Messaggi -->
     <div id="cg-posts-message" class="notice" style="display:none;">
         <p></p>
+    </div>
+    
+    <!-- Progress bar per generazione immagini di massa -->
+    <div id="cg-image-generation-progress" class="cg-progress-container" style="display:none;">
+        <h3><?php _e('Generazione Immagini in Corso...', 'curiosity-generator'); ?></h3>
+        <div class="cg-progress-bar">
+            <div class="cg-progress-fill" style="width: 0%;"></div>
+        </div>
+        <div class="cg-progress-text">
+            <span id="cg-progress-current">0</span> di <span id="cg-progress-total">0</span> completate
+        </div>
+        <div id="cg-progress-status"></div>
+        <button type="button" id="cg-stop-generation" class="button button-secondary"><?php _e('Interrompi', 'curiosity-generator'); ?></button>
     </div>
     
     <!-- Tabella dei post -->
@@ -130,6 +155,7 @@ $counts = $post_manager->get_posts_count_by_status();
                     <th scope="col" class="cg-keyword-column"><?php _e('Parola Chiave', 'curiosity-generator'); ?></th>
                     <th scope="col" class="cg-type-column"><?php _e('Tipo', 'curiosity-generator'); ?></th>
                     <th scope="col" class="cg-language-column"><?php _e('Lingua', 'curiosity-generator'); ?></th>
+                    <th scope="col" class="cg-image-column"><?php _e('Immagine', 'curiosity-generator'); ?></th>
                     <th scope="col" class="cg-date-column"><?php _e('Data', 'curiosity-generator'); ?></th>
                     <th scope="col" class="cg-views-column"><?php _e('Visualizzazioni', 'curiosity-generator'); ?></th>
                     <th scope="col" class="cg-actions-column"><?php _e('Azioni', 'curiosity-generator'); ?></th>
@@ -148,7 +174,7 @@ $counts = $post_manager->get_posts_count_by_status();
     
     <!-- Template per riga della tabella -->
     <script type="text/template" id="cg-post-row-template">
-        <tr data-post-id="{{ID}}">
+        <tr data-post-id="{{ID}}" class="{{no_image_class}}">
             <th scope="row" class="check-column">
                 <input type="checkbox" class="cg-post-checkbox" value="{{ID}}">
             </th>
@@ -162,6 +188,16 @@ $counts = $post_manager->get_posts_count_by_status();
             <td class="cg-keyword-column">{{keyword}}</td>
             <td class="cg-type-column">{{type_label}}</td>
             <td class="cg-language-column">{{language}}</td>
+            <td class="cg-image-column">
+                <span class="cg-image-status cg-image-{{has_image_class}}">
+                    {{image_status_text}}
+                </span>
+                {{#unless_has_image}}
+                <button type="button" class="button button-small cg-generate-single-image" data-post-id="{{ID}}" title="<?php _e('Genera Immagine in Evidenza', 'curiosity-generator'); ?>">
+                    <span class="dashicons dashicons-format-image"></span>
+                </button>
+                {{/unless_has_image}}
+            </td>
             <td class="cg-date-column">{{date_formatted}}</td>
             <td class="cg-views-column">{{view_count}}</td>
             <td class="cg-actions-column">
