@@ -70,6 +70,42 @@
                 self.updateSelectAllCheckbox();
             });
             
+            // NUOVO: Genera immagini per post selezionati
+            $('#cg-bulk-generate-images').on('click', function() {
+                var selectedPosts = $('.cg-post-checkbox:checked').map(function() {
+                    return $(this).val();
+                }).get();
+                
+                if (selectedPosts.length === 0) {
+                    alert('Seleziona almeno un post per generare le immagini.');
+                    return;
+                }
+                
+                self.startBulkImageGeneration(selectedPosts);
+            });
+            
+            // NUOVO: Genera tutte le immagini mancanti
+            $('#cg-generate-all-missing-images').on('click', function() {
+                if (!confirm('Generare immagini per TUTTI i post senza immagine in evidenza? Questa operazione potrebbe richiedere molto tempo.')) {
+                    return;
+                }
+                
+                // Prima seleziona tutti i post senza immagine
+                $('.cg-post-checkbox').prop('checked', false);
+                $('.cg-no-featured-image .cg-post-checkbox').prop('checked', true);
+                
+                var selectedPosts = $('.cg-post-checkbox:checked').map(function() {
+                    return $(this).val();
+                }).get();
+                
+                if (selectedPosts.length === 0) {
+                    alert('Non ci sono post senza immagine in evidenza.');
+                    return;
+                }
+                
+                self.startBulkImageGeneration(selectedPosts);
+            });
+            
             // Azioni bulk
             $('#cg-apply-bulk-action').on('click', function() {
                 self.applyBulkAction();

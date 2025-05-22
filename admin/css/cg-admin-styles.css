@@ -529,6 +529,30 @@ input:checked + .cg-toggle-slider:before {
     align-items: center;
 }
 
+/* NUOVO: Stili per il gruppo di generazione immagini */
+.cg-image-generation-group {
+    border-left: 3px solid #4CAF50;
+    padding-left: 15px;
+    margin-left: 15px;
+}
+
+.cg-image-generation-group button {
+    margin-right: 10px;
+    font-weight: 600;
+}
+
+.cg-image-generation-group button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.cg-image-generation-group .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+}
+
 .cg-loading {
     text-align: center;
     padding: 40px 0;
@@ -822,6 +846,22 @@ input:checked + .cg-toggle-slider:before {
     
     .cg-filter-group,
     .cg-bulk-group {
+        width: 100%;
+    }
+    
+    /* Miglioramento responsive per i nuovi pulsanti */
+    .cg-image-generation-group {
+        border-left: none;
+        padding-left: 0;
+        margin-left: 0;
+        margin-top: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .cg-image-generation-group button {
+        margin-right: 0;
         width: 100%;
     }
     

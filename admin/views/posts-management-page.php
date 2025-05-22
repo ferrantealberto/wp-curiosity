@@ -114,6 +114,18 @@ $image_stats = $post_manager->get_posts_featured_image_stats();
                 <button type="button" id="cg-deselect-all-posts" class="button"><?php _e('Deseleziona tutti', 'curiosity-generator'); ?></button>
                 <button type="button" id="cg-select-no-image-posts" class="button button-primary"><?php _e('Seleziona senza immagine', 'curiosity-generator'); ?></button>
             </div>
+            
+            <!-- NUOVO: Gruppo dedicato alla generazione immagini -->
+            <div class="cg-bulk-group cg-image-generation-group">
+                <button type="button" id="cg-bulk-generate-images" class="button button-primary" style="background-color: #4CAF50; border-color: #4CAF50;">
+                    <span class="dashicons dashicons-format-image" style="margin-right: 5px;"></span>
+                    <?php _e('Genera Immagini per Selezionati', 'curiosity-generator'); ?>
+                </button>
+                <button type="button" id="cg-generate-all-missing-images" class="button" style="background-color: #FF9800; border-color: #FF9800; color: white;">
+                    <span class="dashicons dashicons-images-alt2" style="margin-right: 5px;"></span>
+                    <?php _e('Genera Tutte le Immagini Mancanti', 'curiosity-generator'); ?>
+                </button>
+            </div>
         </div>
     </div>
     
