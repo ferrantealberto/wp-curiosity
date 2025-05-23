@@ -36,7 +36,7 @@ class CG_Admin {
             array($this, 'render_scheduler_page')
         );
         
-        // NUOVO: Aggiunta della pagina di gestione post
+        // Aggiunta della pagina di gestione post
         add_submenu_page(
             'curiosity-generator-settings',
             __('Gestione Post Curiosità', 'curiosity-generator'),
@@ -51,6 +51,7 @@ class CG_Admin {
      * Register plugin settings.
      */
     public function register_settings() {
+        // Impostazioni esistenti
         register_setting('cg_settings_group', 'cg_openrouter_api_key');
         register_setting('cg_settings_group', 'cg_llm_model');
         register_setting('cg_settings_group', 'cg_adsense_inline_code');
@@ -64,6 +65,16 @@ class CG_Admin {
         register_setting('cg_settings_group', 'cg_max_curiosities', array($this, 'sanitize_number'));
         register_setting('cg_settings_group', 'cg_min_curiosity_length', array($this, 'sanitize_number'));
         register_setting('cg_settings_group', 'cg_default_author', array($this, 'sanitize_number'));
+        
+        // Nuove impostazioni per la generazione di immagini
+        register_setting('cg_settings_group', 'cg_image_generation_method');
+        register_setting('cg_settings_group', 'cg_image_ai_model');
+        register_setting('cg_settings_group', 'cg_image_openrouter_model');
+        register_setting('cg_settings_group', 'cg_n8n_webhook_url');
+        register_setting('cg_settings_group', 'cg_n8n_api_token');
+        register_setting('cg_settings_group', 'cg_image_size');
+        register_setting('cg_settings_group', 'cg_image_quality');
+        register_setting('cg_settings_group', 'cg_image_style');
     }
     
     /**
@@ -129,7 +140,7 @@ class CG_Admin {
     }
     
     /**
-     * NUOVO: Handler AJAX per le azioni bulk sui post
+     * Handler AJAX per le azioni bulk sui post
      */
     public function ajax_bulk_posts_action() {
         // Verifica il nonce per la sicurezza
@@ -193,7 +204,7 @@ class CG_Admin {
     }
     
     /**
-     * NUOVO: Handler AJAX per il caricamento dei post con filtri
+     * Handler AJAX per il caricamento dei post con filtri
      */
     public function ajax_load_posts() {
         // Verifica il nonce per la sicurezza
@@ -233,7 +244,7 @@ class CG_Admin {
             $args['post_status'] = 'any';
         }
         
-        // NUOVO: Filtro per immagine in evidenza
+        // Filtro per immagine in evidenza
         if (!empty($featured_image) && $featured_image !== 'any') {
             if ($featured_image === 'with_image') {
                 $args['meta_query'][] = array(
@@ -280,7 +291,7 @@ class CG_Admin {
                 'type' => get_post_meta($post->ID, 'cg_type', true),
                 'language' => get_post_meta($post->ID, 'cg_language', true),
                 'view_count' => get_post_meta($post->ID, 'cg_view_count', true),
-                'has_featured_image' => has_post_thumbnail($post->ID), // NUOVO
+                'has_featured_image' => has_post_thumbnail($post->ID),
                 'edit_link' => get_edit_post_link($post->ID),
                 'view_link' => get_permalink($post->ID)
             );
@@ -290,7 +301,7 @@ class CG_Admin {
     }
     
     /**
-     * NUOVO: Handler AJAX per la generazione di immagini in evidenza
+     * Handler AJAX per la generazione di immagini in evidenza
      */
     public function ajax_generate_featured_image() {
         // Verifica il nonce per la sicurezza
@@ -380,6 +391,61 @@ class CG_Admin {
     }
     
     /**
+     * Test n8n webhook connection.
+     */
+    public function ajax_test_n8n_webhook() {
+        // Verifica il nonce per la sicurezza
+        check_ajax_referer('cg_admin_nonce', 'nonce');
+        
+        // Verifica se l'utente ha i permessi
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Permessi insufficienti');
+        }
+        
+        $webhook_url = isset($_POST['webhook_url']) ? esc_url_raw($_POST['webhook_url']) : '';
+        $api_token = isset($_POST['api_token']) ? sanitize_text_field($_POST['api_token']) : '';
+        
+        if (empty($webhook_url)) {
+            wp_send_json_error('URL webhook mancante');
+        }
+        
+        // Prepara i dati per il test
+        $test_data = array(
+            'action' => 'test',
+            'site_url' => site_url(),
+            'token' => $api_token
+        );
+        
+        // Invia una richiesta di test al webhook
+        $response = wp_remote_post($webhook_url, array(
+            'headers' => array(
+                'Content-Type' => 'application/json'
+            ),
+            'body' => json_encode($test_data),
+            'timeout' => 15
+        ));
+        
+        if (is_wp_error($response)) {
+            wp_send_json_error('Errore nella connessione: ' . $response->get_error_message());
+        }
+        
+        $status_code = wp_remote_retrieve_response_code($response);
+        if ($status_code !== 200) {
+            wp_send_json_error('Risposta non valida (codice ' . $status_code . ')');
+        }
+        
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+        
+        if (empty($data) || !isset($data['success']) || !$data['success']) {
+            $error_message = isset($data['message']) ? $data['message'] : 'Risposta non valida dal webhook';
+            wp_send_json_error($error_message);
+        }
+        
+        wp_send_json_success();
+    }
+    
+    /**
      * Sanitize number input.
      */
     public function sanitize_number($input) {
@@ -397,11 +463,17 @@ class CG_Admin {
             
             wp_enqueue_style('cg-admin-styles', CG_PLUGIN_URL . 'admin/css/cg-admin-styles.css', array(), CG_VERSION);
             
+            // Nuovo stile per la generazione di immagini
+            wp_enqueue_style('cg-image-generator-styles', CG_PLUGIN_URL . 'admin/css/cg-image-generator-styles.css', array(), CG_VERSION);
+            
             // Carica Select2 per i dropdown avanzati
             wp_enqueue_style('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css');
             wp_enqueue_script('select2', 'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js', array('jquery'), '4.0.13', true);
             
             wp_enqueue_script('cg-admin-scripts', CG_PLUGIN_URL . 'admin/js/cg-admin-scripts.js', array('jquery', 'select2'), CG_VERSION, true);
+            
+            // Carica lo script per la generazione di immagini
+            wp_enqueue_script('cg-image-generator', CG_PLUGIN_URL . 'admin/js/cg-image-generator.js', array('jquery', 'select2'), CG_VERSION, true);
             
             // Localizza lo script per l'AJAX
             wp_localize_script('cg-admin-scripts', 'cg_admin_object', array(
@@ -434,7 +506,7 @@ class CG_Admin {
                 ));
             }
             
-            // NUOVO: Script per la gestione dei post
+            // Script per la gestione dei post
             if ('curiosity-generator_page_curiosity-generator-posts' === $hook) {
                 wp_enqueue_script('cg-posts-management', CG_PLUGIN_URL . 'admin/js/cg-posts-management.js', array('jquery'), CG_VERSION, true);
             }
@@ -463,7 +535,7 @@ class CG_Admin {
     }
     
     /**
-     * NUOVO: Render posts management page.
+     * Render posts management page.
      */
     public function render_posts_management_page() {
         require_once CG_PLUGIN_DIR . 'admin/views/posts-management-page.php';

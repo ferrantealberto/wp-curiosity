@@ -167,29 +167,58 @@ class CG_OpenRouter {
     }
 
     /**
-     * AGGIORNATO: Genera un'immagine utilizzando direttamente DALL-E 3.
+     * Genera un'immagine utilizzando il metodo selezionato.
+     * 
+     * @param string $prompt Il prompt per la generazione dell'immagine
+     * @param int $post_id L'ID del post per cui generare l'immagine
+     * @return int|WP_Error ID dell'immagine generata o errore
      */
     public function generate_image($prompt, $post_id) {
+        // Ottieni il metodo selezionato per la generazione di immagini
+        $generation_method = get_option('cg_image_generation_method', 'ai_direct');
+        
+        // Genera l'immagine con il metodo appropriato
+        if ($generation_method === 'n8n') {
+            return $this->generate_image_with_n8n($prompt, $post_id);
+        } else {
+            // Metodo AI diretto (DALL-E, DeepSeek, OpenRouter)
+            $ai_model = get_option('cg_image_ai_model', 'dalle3');
+            
+            switch ($ai_model) {
+                case 'dalle3':
+                    return $this->generate_image_with_dalle3($prompt, $post_id);
+                case 'deepseek':
+                    return $this->generate_image_with_deepseek($prompt, $post_id);
+                case 'openrouter':
+                    $model_id = get_option('cg_image_openrouter_model', 'openai/dall-e-3');
+                    return $this->generate_image_with_openrouter($prompt, $post_id, $model_id);
+                default:
+                    return $this->generate_image_with_dalle3($prompt, $post_id);
+            }
+        }
+    }
+
+    /**
+     * Genera un'immagine utilizzando DALL-E 3 tramite OpenRouter.
+     */
+    private function generate_image_with_dalle3($prompt, $post_id) {
         $api_key = $this->get_api_key();
 
         if (empty($api_key)) {
             return new WP_Error('missing_api_key', 'OpenRouter API key is missing');
         }
 
-        // Crea un prompt ottimizzato direttamente per DALL-E 3
-        $optimized_prompt = $this->optimize_image_prompt($prompt, $post_id);
-
         // Usa direttamente l'endpoint per la generazione di immagini
         $image_endpoint = 'https://openrouter.ai/api/v1/images/generations';
         
         $image_request_body = array(
             'model' => 'openai/dall-e-3',
-            'prompt' => $optimized_prompt,
+            'prompt' => $prompt,
             'n' => 1,
-            'size' => '1792x1024', // NUOVO: Dimensione ottimale per WordPress (16:9)
+            'size' => '1792x1024', // Dimensione ottimale per WordPress (16:9)
             'quality' => 'hd',
             'response_format' => 'url',
-            'style' => 'natural' // NUOVO: Stile naturale per blog educativi
+            'style' => 'natural'
         );
 
         $image_response = wp_remote_post($image_endpoint, array(
@@ -210,8 +239,119 @@ class CG_OpenRouter {
         $image_body = wp_remote_retrieve_body($image_response);
         $image_data = json_decode($image_body, true);
 
-        // Log per debug
-        error_log('OpenRouter Image Response: ' . $image_body);
+        if (empty($image_data) || !isset($image_data['data'][0]['url'])) {
+            return new WP_Error('api_error', 'Invalid response from OpenRouter API for image generation: ' . $image_body);
+        }
+
+        // Ottieni l'URL dell'immagine generata
+        $image_url = $image_data['data'][0]['url'];
+        
+        // Scarica l'immagine e impostala come featured image
+        return $this->set_image_as_featured($image_url, $post_id);
+    }
+
+    /**
+     * Genera un'immagine utilizzando DeepSeek tramite OpenRouter.
+     */
+    private function generate_image_with_deepseek($prompt, $post_id) {
+        $api_key = $this->get_api_key();
+
+        if (empty($api_key)) {
+            return new WP_Error('missing_api_key', 'OpenRouter API key is missing');
+        }
+
+        // Usa direttamente l'endpoint per la generazione di immagini
+        $image_endpoint = 'https://openrouter.ai/api/v1/images/generations';
+        
+        $image_request_body = array(
+            'model' => 'deepseek/deepseek-coder-v2', // DeepSeek Coder V2
+            'prompt' => $prompt,
+            'n' => 1,
+            'size' => '1024x1024', // Dimensione standard
+            'response_format' => 'url'
+        );
+
+        $image_response = wp_remote_post($image_endpoint, array(
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $api_key,
+                'Content-Type' => 'application/json',
+                'HTTP-Referer' => home_url()
+            ),
+            'body' => json_encode($image_request_body),
+            'timeout' => 60
+        ));
+
+        if (is_wp_error($image_response)) {
+            error_log('DeepSeek Image API Error: ' . $image_response->get_error_message());
+            return $image_response;
+        }
+
+        $image_body = wp_remote_retrieve_body($image_response);
+        $image_data = json_decode($image_body, true);
+
+        if (empty($image_data) || !isset($image_data['data'][0]['url'])) {
+            return new WP_Error('api_error', 'Invalid response from DeepSeek API for image generation: ' . $image_body);
+        }
+
+        // Ottieni l'URL dell'immagine generata
+        $image_url = $image_data['data'][0]['url'];
+        
+        // Scarica l'immagine e impostala come featured image
+        return $this->set_image_as_featured($image_url, $post_id);
+    }
+
+    /**
+     * Genera un'immagine utilizzando un modello specifico di OpenRouter.
+     */
+    private function generate_image_with_openrouter($prompt, $post_id, $model_id) {
+        $api_key = $this->get_api_key();
+
+        if (empty($api_key)) {
+            return new WP_Error('missing_api_key', 'OpenRouter API key is missing');
+        }
+
+        // Usa direttamente l'endpoint per la generazione di immagini
+        $image_endpoint = 'https://openrouter.ai/api/v1/images/generations';
+        
+        $image_request_body = array(
+            'model' => $model_id,
+            'prompt' => $prompt,
+            'n' => 1,
+            'size' => '1024x1024', // Dimensione standard
+            'response_format' => 'url'
+        );
+
+        // Aggiungi parametri specifici per alcuni modelli
+        if ($model_id === 'openai/dall-e-3') {
+            $image_request_body['quality'] = 'hd';
+            $image_request_body['size'] = '1792x1024';
+            $image_request_body['style'] = 'natural';
+        } elseif (strpos($model_id, 'stability') !== false) {
+            // Parametri specifici per Stable Diffusion
+            $image_request_body['cfg_scale'] = 7.5;
+            $image_request_body['steps'] = 30;
+        } elseif (strpos($model_id, 'midjourney') !== false) {
+            // Parametri specifici per Midjourney
+            $image_request_body['quality'] = 1;
+        }
+
+        $image_response = wp_remote_post($image_endpoint, array(
+            'headers' => array(
+                'Authorization' => 'Bearer ' . $api_key,
+                'Content-Type' => 'application/json',
+                'HTTP-Referer' => home_url()
+            ),
+            'body' => json_encode($image_request_body),
+            'timeout' => 120 // Aumento del timeout per modelli più complessi
+        ));
+
+        if (is_wp_error($image_response)) {
+            error_log('OpenRouter Image API Error: ' . $image_response->get_error_message());
+            return $image_response;
+        }
+
+        $image_body = wp_remote_retrieve_body($image_response);
+        $image_data = json_decode($image_body, true);
 
         if (empty($image_data) || !isset($image_data['data'][0]['url'])) {
             return new WP_Error('api_error', 'Invalid response from OpenRouter API for image generation: ' . $image_body);
@@ -225,7 +365,66 @@ class CG_OpenRouter {
     }
 
     /**
-     * NUOVO: Ottimizza il prompt per la generazione di immagini.
+     * Genera un'immagine utilizzando n8n.
+     */
+    private function generate_image_with_n8n($prompt, $post_id) {
+        // Ottieni l'URL e il token dell'webhook n8n
+        $n8n_webhook_url = get_option('cg_n8n_webhook_url', '');
+        $n8n_api_token = get_option('cg_n8n_api_token', '');
+
+        if (empty($n8n_webhook_url)) {
+            return new WP_Error('missing_n8n_url', 'n8n webhook URL is missing');
+        }
+
+        // Prepara i dati da inviare a n8n
+        $data = array(
+            'prompt' => $prompt,
+            'post_id' => $post_id,
+            'site_url' => site_url(),
+            'token' => $n8n_api_token
+        );
+
+        // Invia la richiesta a n8n
+        $response = wp_remote_post($n8n_webhook_url, array(
+            'headers' => array(
+                'Content-Type' => 'application/json',
+            ),
+            'body' => json_encode($data),
+            'timeout' => 120 // Timeout più lungo per l'elaborazione di n8n
+        ));
+
+        if (is_wp_error($response)) {
+            error_log('n8n Webhook Error: ' . $response->get_error_message());
+            return $response;
+        }
+
+        $body = wp_remote_retrieve_body($response);
+        $data = json_decode($body, true);
+
+        // Verifica la risposta di n8n
+        if (empty($data) || !isset($data['success']) || !$data['success']) {
+            $error_message = isset($data['message']) ? $data['message'] : 'Unknown error';
+            return new WP_Error('n8n_error', 'Error from n8n: ' . $error_message);
+        }
+
+        // Se n8n ha creato l'immagine direttamente e ha restituito l'ID dell'allegato
+        if (isset($data['attachment_id']) && $data['attachment_id'] > 0) {
+            // Imposta l'immagine come featured image
+            set_post_thumbnail($post_id, $data['attachment_id']);
+            return $data['attachment_id'];
+        }
+
+        // Se n8n ha restituito un URL dell'immagine
+        if (isset($data['image_url']) && !empty($data['image_url'])) {
+            // Scarica l'immagine e impostala come featured image
+            return $this->set_image_as_featured($data['image_url'], $post_id);
+        }
+
+        return new WP_Error('n8n_no_image', 'n8n did not return an image');
+    }
+
+    /**
+     * Ottimizza il prompt per la generazione di immagini.
      */
     private function optimize_image_prompt($base_prompt, $post_id) {
         // Ottieni informazioni dal post
@@ -260,7 +459,7 @@ class CG_OpenRouter {
         $optimized .= "Use vibrant but tasteful colors, clear composition, good lighting. ";
         $optimized .= "Avoid text overlays. 16:9 aspect ratio. Photorealistic style.";
 
-        // Limita la lunghezza del prompt per DALL-E 3
+        // Limita la lunghezza del prompt
         return substr($optimized, 0, 4000);
     }
 

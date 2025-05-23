@@ -137,7 +137,7 @@ function cg_model_can_generate_images($model_id) {
         'runwayml/stable-diffusion-v1-5',
         'black-forest-labs/flux-schnell',
         'black-forest-labs/flux-dev',
-        'qwen/qwen-2.5-vl-72b-instruct' // NUOVO: Aggiunto per supportare la generazione tramite descrizione
+        'qwen/qwen-2.5-vl-72b-instruct' // Aggiunto per supportare la generazione tramite descrizione
     );
     
     return in_array($model_id, $image_capable_models);
@@ -240,7 +240,35 @@ function cg_get_users_for_dropdown() {
 }
 
 /**
- * NUOVO: Genera un prompt ottimizzato per la generazione di immagini basato sui parametri della curiosità.
+ * Ottieni i modelli OpenRouter che supportano la generazione di immagini
+ */
+function cg_get_image_capable_openrouter_models() {
+    // Ottieni tutti i modelli
+    $all_models = cg_fetch_openrouter_models();
+    
+    // Filtra solo quelli che possono generare immagini
+    $image_models = array();
+    foreach ($all_models as $model_id => $model_name) {
+        if (cg_model_can_generate_images($model_id)) {
+            $image_models[$model_id] = $model_name;
+        }
+    }
+    
+    // Se non sono stati trovati modelli, ritorna alcuni predefiniti
+    if (empty($image_models)) {
+        return array(
+            'openai/dall-e-3' => 'DALL·E 3 (OpenAI)',
+            'stability/stable-diffusion-xl-1024-v1-0' => 'Stable Diffusion XL 1.0',
+            'midjourney/mj' => 'Midjourney',
+            'google/imagen-2' => 'Google Imagen 2'
+        );
+    }
+    
+    return $image_models;
+}
+
+/**
+ * Genera un prompt ottimizzato per la generazione di immagini basato sui parametri della curiosità.
  * 
  * @param array $params Parametri della curiosità
  * @param string $title Titolo della curiosità
@@ -292,7 +320,7 @@ function cg_generate_image_prompt($params, $title = '', $content = '') {
 }
 
 /**
- * NUOVO: Valida se un post è idoneo per la generazione di immagini.
+ * Valida se un post è idoneo per la generazione di immagini.
  * 
  * @param int $post_id ID del post
  * @return bool|WP_Error True se valido, WP_Error se non valido
@@ -318,7 +346,7 @@ function cg_validate_post_for_image_generation($post_id) {
 }
 
 /**
- * NUOVO: Ottieni statistiche di utilizzo delle immagini.
+ * Ottieni statistiche di utilizzo delle immagini.
  * 
  * @return array Statistiche delle immagini
  */
